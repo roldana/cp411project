@@ -21,29 +21,32 @@ let ORBIT_SPEED_SATURN = 1/2.95;
 let ORBIT_SPEED_URANUS = 1/8.4;
 let ORBIT_SPEED_NEPTUNE = 1/16.48;
 
-var camera, scene, renderer;
+// window resize listener
+window.addEventListener( 'resize', onWindowResize, false );
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+}
 
-var distance_between = 50;
-var inner_planet_radius_multiplier = 15;
-var outer_planet_radius_multiplier = 4.5;
-var orbit_speed_multiplier = 0.01;
-
-//camera
-camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+// camera
+var camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
 camera.position.z = 500;
 
-scene = new THREE.Scene();
+// renderer object
+var renderer = new THREE.WebGLRenderer( { antialias: true } );
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
 
-var gui = new GUI();
-var folder = gui.addFolder( 'Solar System Control' );
-// folder.add( data, 'width', 1, 30 ).onChange( generateGeometry );
-// folder.add( data, 'height', 1, 30 ).onChange( generateGeometry );
-// folder.add( data, 'depth', 1, 30 ).onChange( generateGeometry );
-// folder.add( data, 'widthSegments', 1, 10 ).step( 1 ).onChange( generateGeometry );
-// folder.add( data, 'heightSegments', 1, 10 ).step( 1 ).onChange( generateGeometry );
-// folder.add( data, 'depthSegments', 1, 10 ).step( 1 ).onChange( generateGeometry );
+// set scene
+var scene = new THREE.Scene();
 
-//background
+// orbit controls
+var orbit = new OrbitControls( camera, renderer.domElement );
+orbit.enableZoom = true;
+
+// set background mesh
 var bgTexture = new THREE.TextureLoader().load( './texture/8k_stars_milky_way.jpg' );
 var bgSettings = {
     geometry: new THREE.SphereGeometry(
@@ -60,7 +63,6 @@ var bg = new THREE.Mesh(
     bgSettings.material
 )
 scene.add(bg);
-// scene.background = bgTexture;
 
 //lights
 var lights = [];
@@ -79,8 +81,12 @@ scene.add( lights[ 1 ] );
 scene.add( lights[ 2 ] );
 scene.add( lights[ 3 ] );
 
-//texture
-var planets = new THREE.Group();
+var distance_between = 50;
+var inner_planet_radius_multiplier = 15;
+var outer_planet_radius_multiplier = 4.5;
+var orbit_speed_multiplier = 0.01;
+
+// set sun and planets
 
 //sun
 var sunGeometry = new THREE.SphereGeometry( RADIUS_SUN, 80, 60, 0, Math.PI*2, 0, Math.PI );
@@ -100,6 +106,9 @@ var spriteMaterial = new THREE.SpriteMaterial(
 var sprite = new THREE.Sprite( spriteMaterial );
 sprite.scale.set(260, 260, 1.0);
 sun.add( sprite );
+
+// planet group
+var planets = new THREE.Group();
 
 //mercury
 var mercuryGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_MERCURY * inner_planet_radius_multiplier, 80, 60, 0, Math.PI*2, 0, Math.PI );
@@ -185,21 +194,13 @@ planets.add( neptune );
 
 scene.add( planets );
 
-renderer = new THREE.WebGLRenderer( { antialias: true } );
-renderer.setPixelRatio( window.devicePixelRatio );
-renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
 
-var orbit = new OrbitControls( camera, renderer.domElement );
-orbit.enableZoom = true;
+// gui controls
+var gui = new GUI();
+var folder = gui.addFolder( 'Solar System Control' );
+// folder.add( data, 'width', 1, 30 ).onChange( generateGeometry );
 
-//
 
-window.addEventListener( 'resize', onWindowResize, false );
-
-var t = 0;
-
-console.log(planets);
 var orbitAnimation = true;
 var mercuryOrbitRadius = mercury.position.x;
 var venusOrbitRadius = venus.position.x;
@@ -209,19 +210,11 @@ var jupiterOrbitRadius = jupiter.position.x;
 var saturnOrbitRadius = saturn.position.x;
 var uranusOrbitRadius = uranus.position.x;
 var neptuneOrbitRadius = neptune.position.x;
-
-animate();
-
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-}
+var t = 0;
 
 function animate() {
     requestAnimationFrame( animate );
 
-    // earth.rotation.y += 0.002;
     //animate orbits
     if (orbitAnimation) {
         mercury.position.x = Math.sin(t * ORBIT_SPEED_MERCURY * orbit_speed_multiplier) * mercuryOrbitRadius;
@@ -248,8 +241,9 @@ function animate() {
         neptune.position.x = Math.sin(t * ORBIT_SPEED_NEPTUNE * orbit_speed_multiplier) * neptuneOrbitRadius;
         neptune.position.z = Math.cos(t * ORBIT_SPEED_NEPTUNE * orbit_speed_multiplier) * neptuneOrbitRadius;
     }
-    
 
     renderer.render( scene, camera );
     t += Math.PI / 180 * 2;
 }
+
+animate();
