@@ -45,6 +45,7 @@ camera.position.set(-300, 400, -300);
 var renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.shadowMapEnabled = true;
 document.body.appendChild( renderer.domElement );
 
 // set scene
@@ -53,7 +54,6 @@ var scene = new THREE.Scene();
 // orbit controls
 var orbit = new OrbitControls( camera, renderer.domElement );
 orbit.enableZoom = true;
-// orbit.enableDamping = true;
 orbit.maxPolarAngle = Math.PI / 2;
 orbit.minDistance = 150;
 orbit.maxDistance = 1500;
@@ -76,31 +76,22 @@ var bg = new THREE.Mesh(
 )
 scene.add(bg);
 
-//lights
-var lights = [];
-lights[ 0 ] = new THREE.PointLight( 0xffffff, 1, 0 );
-lights[ 1 ] = new THREE.PointLight( 0xffffff, 1, 0 );
-lights[ 2 ] = new THREE.PointLight( 0xffffff, 1, 0 );
-lights[ 3 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+// sunlight
+var sunlight = new THREE.PointLight( 0xffffff, 1, 0 );
+sunlight.castShadow = true;
+sunlight.shadowDarkness = 0.9;
+scene.add(sunlight);
 
-lights[ 0 ].position.set( 0, 2000, 0 );
-lights[ 1 ].position.set( 1000, 2000, 1000 );
-lights[ 2 ].position.set( - 1000, - 2000, - 1000 );
-lights[ 3 ].position.set( 0, 0, 0);
-
-// scene.add( lights[ 0 ] );
-// scene.add( lights[ 1 ] );
-// scene.add( lights[ 2 ] );
-scene.add( lights[ 3 ] );
-
-var ambientLight = new THREE.AmbientLight(0xffffff);
-// scene.add(ambientLight);
+// ambient light
+var ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+ambientLight.visible = false;
+scene.add(ambientLight);
 
 // set sun and planets
 //sun
 var sunGeometry = new THREE.SphereGeometry( RADIUS_SUN, 80, 60, 0, Math.PI*2, 0, Math.PI );
 var sunTexture = new THREE.TextureLoader().load( './texture/2k_sun.jpg' );
-var sunMaterial = new THREE.MeshLambertMaterial( { emissive: 0xffffff,  emissiveMap: sunTexture, emmisiveIntensity: 0.2 } );
+var sunMaterial = new THREE.MeshLambertMaterial( { emissive: 0xffffff,  emissiveMap: sunTexture, emissiveIntensity: 1 } );
 var sun = new THREE.Mesh( sunGeometry, sunMaterial );
 scene.add( sun );
 
@@ -127,6 +118,8 @@ var mercury = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_mercury.jpg')
         }));
 mercury.position.set(endPosX + mercuryGeometry.parameters.radius + distance_between, 0, 0);
+mercury.castShadow = true;
+mercury.receiveShadow = true;
 endPosX = mercury.position.x + mercuryGeometry.parameters.radius;
 planets.add( mercury );
 
@@ -138,6 +131,8 @@ var venus  = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_venus_surface.jpg')
         }));
 venus.position.set(endPosX + venusGeometry.parameters.radius + distance_between, 0, 0);
+venus.castShadow = true;
+venus.receiveShadow = true;
 endPosX = venus.position.x + venusGeometry.parameters.radius;
 planets.add( venus );
 
@@ -149,6 +144,8 @@ var earth  = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_earth_daymap.jpg')
         }));
 earth.position.set(endPosX + earthGeometry.parameters.radius + distance_between, 0, 0);
+earth.castShadow = true;
+earth.receiveShadow = true;
 endPosX = earth.position.x + earthGeometry.parameters.radius;
 planets.add( earth );
 
@@ -160,6 +157,8 @@ var mars = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_mars.jpg')
         }));
 mars.position.set(endPosX + marsGeometry.parameters.radius + distance_between, 0, 0);
+mars.castShadow = true;
+mars.receiveShadow = true;
 endPosX = mars.position.x + marsGeometry.parameters.radius;
 planets.add( mars );
 
@@ -171,6 +170,8 @@ var jupiter  = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_jupiter.jpg')
         }));
 jupiter.position.set(endPosX + jupiterGeometry.parameters.radius + distance_between, 0, 0);
+jupiter.castShadow = true;
+jupiter.receiveShadow = true;
 endPosX = jupiter.position.x + jupiterGeometry.parameters.radius;
 planets.add( jupiter );
 
@@ -182,6 +183,8 @@ var saturn = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_saturn.jpg')
         }));
 saturn.position.set(endPosX + saturnGeometry.parameters.radius + distance_between, 0, 0);
+saturn.castShadow = true;
+saturn.receiveShadow = true;
 endPosX = saturn.position.x + saturnGeometry.parameters.radius;
 planets.add( saturn );
 
@@ -191,6 +194,7 @@ var saturnRGeometry = new THREE.RingBufferGeometry( RADIUS_SUN * RADIUS_MULTIPLI
 var saturnRTexture = new THREE.TextureLoader().load( './texture/saturn_ring2.jpg' );
 var saturnRMaterial = new THREE.MeshLambertMaterial( { map: saturnRTexture, side: THREE.DoubleSide, transparent: false } );
 var saturnR = new THREE.Mesh( saturnRGeometry, saturnRMaterial );
+saturnR.receiveShadow = true;
 saturnR.rotateY(THREE.Math.degToRad(90));
 saturnR.rotateX(THREE.Math.degToRad(45));
 saturn.add( saturnR );
@@ -203,6 +207,8 @@ var uranus = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_uranus.jpg')
         }));
 uranus.position.set(endPosX + uranusGeometry.parameters.radius + distance_between, 0, 0);
+uranus.castShadow = true;
+uranus.receiveShadow = true;
 endPosX = uranus.position.x + uranusGeometry.parameters.radius;
 planets.add( uranus );
 
@@ -214,6 +220,8 @@ var neptune = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_neptune.jpg')
         }));
 neptune.position.set(endPosX + neptuneGeometry.parameters.radius + distance_between, 0, 0);
+neptune.castShadow = true;
+neptune.receiveShadow = true;
 endPosX = neptune.position.x + neptuneGeometry.parameters.radius;
 planets.add( neptune );
 
@@ -242,6 +250,9 @@ folder.add(options, 'sun_light_only').name('Sun Light Only');
 folder.add(options, 'true_size').name('True Scale');
 folder.add(options, 'earth_view').name('Earth View');
 folder.add(options, 'hide_background').name('Hide Background');
+// folder.add(ambientLight, 'intensity', 0, 0.5).name('Ambient Light Intensity');
+folder.add(ambientLight, 'visible').name('Ambient Light');
+// folder.add(renderer, 'shadowMapEnabled').name('Enable Shadows');
 
 // get planets orbit radius
 var mercuryOrbitRadius = mercury.position.x;
