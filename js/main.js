@@ -51,6 +51,10 @@ var scene = new THREE.Scene();
 // orbit controls
 var orbit = new OrbitControls( camera, renderer.domElement );
 orbit.enableZoom = true;
+// orbit.enableDamping = true;
+orbit.maxPolarAngle = Math.PI / 2;
+orbit.minDistance = 150;
+orbit.maxDistance = 1500;
 
 // set background mesh
 var bgTexture = new THREE.TextureLoader().load( './texture/8k_stars_milky_way.jpg' );
@@ -200,6 +204,7 @@ var options = {
     orbit_animation: true,
     sun_light_only: false,
     true_size: false,
+    hide_background: false
 }
 
 // gui controls
@@ -210,6 +215,7 @@ folder.add(options, 'orbit_speed_multiplier', 0.02, 0.1 ).name('Orbit Speed');
 folder.add(options, 'orbit_animation').name('Animate Orbit');
 folder.add(options, 'sun_light_only').name('Sun Light Only');
 folder.add(options, 'true_size').name('True Scale');
+folder.add(options, 'hide_background').name('Hide Background');
 
 // get planets orbit radius
 var mercuryOrbitRadius = mercury.position.x;
@@ -271,6 +277,9 @@ function animate() {
         uranus.scale.set(1, 1, 1);
         neptune.scale.set(1, 1, 1);
     }
+
+    if (options.hide_background) {bg.material.color = new THREE.Color(0x000000);}
+    else {bg.material.color = new THREE.Color(0xFFFFFF);}
 
     renderer.render( scene, camera );
     t += Math.PI / 180 * 2;
