@@ -207,6 +207,10 @@ var options = {
     orbit_animation: true,
     sun_light_only: false,
     true_size: false,
+    earth_view: function (){
+        camera.position.set(earth.position.x+150, earth.position.y+150, earth.position.z+150);
+        camera.lookAt(earth.position.x, earth.position.y, earth.position.z);
+    },
     hide_background: false
 }
 
@@ -218,6 +222,7 @@ folder.add(options, 'orbit_speed_multiplier', 0.02, 0.1 ).name('Orbit Speed');
 folder.add(options, 'orbit_animation').name('Animate Orbit');
 folder.add(options, 'sun_light_only').name('Sun Light Only');
 folder.add(options, 'true_size').name('True Scale');
+folder.add(options, 'earth_view').name('Earth View');
 folder.add(options, 'hide_background').name('Hide Background');
 
 // get planets orbit radius
@@ -229,6 +234,7 @@ var jupiterOrbitRadius = jupiter.position.x;
 var saturnOrbitRadius = saturn.position.x;
 var uranusOrbitRadius = uranus.position.x;
 var neptuneOrbitRadius = neptune.position.x;
+
 var t = 0;
 
 function animate() {
@@ -262,23 +268,18 @@ function animate() {
     }
 
     if(options.true_size) {
-        mercury.scale.set(1 / INNER_PLANET_RADIUS_MULTIPLIER, 1 / INNER_PLANET_RADIUS_MULTIPLIER, 1 / INNER_PLANET_RADIUS_MULTIPLIER);
-        venus.scale.set(1 / INNER_PLANET_RADIUS_MULTIPLIER, 1 / INNER_PLANET_RADIUS_MULTIPLIER, 1 / INNER_PLANET_RADIUS_MULTIPLIER);
-        earth.scale.set(1 / INNER_PLANET_RADIUS_MULTIPLIER, 1 / INNER_PLANET_RADIUS_MULTIPLIER, 1 / INNER_PLANET_RADIUS_MULTIPLIER);
-        mars.scale.set(1 / INNER_PLANET_RADIUS_MULTIPLIER, 1 / INNER_PLANET_RADIUS_MULTIPLIER, 1 / INNER_PLANET_RADIUS_MULTIPLIER);
-        jupiter.scale.set(1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER);
-        saturn.scale.set(1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER);
-        uranus.scale.set(1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER);
-        neptune.scale.set(1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER);
+        for (var i = 0; i < planets.children.length; i++){
+            if (i < 4) {
+                planets.children[i].scale.set(1 / INNER_PLANET_RADIUS_MULTIPLIER, 1 / INNER_PLANET_RADIUS_MULTIPLIER, 1 / INNER_PLANET_RADIUS_MULTIPLIER);
+            } else {
+                planets.children[i].scale.set(1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER);
+
+            }
+        }
     } else {
-        mercury.scale.set(1, 1, 1);
-        venus.scale.set(1, 1, 1);
-        earth.scale.set(1, 1, 1);
-        mars.scale.set(1, 1, 1);
-        jupiter.scale.set(1, 1, 1);
-        saturn.scale.set(1, 1, 1);
-        uranus.scale.set(1, 1, 1);
-        neptune.scale.set(1, 1, 1);
+        for (var i = 0; i < planets.children.length; i++){
+            planets.children[i].scale.set(1, 1, 1);
+        }
     }
 
     if (options.hide_background) {bg.material.color = new THREE.Color(0x000000);}
