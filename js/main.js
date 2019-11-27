@@ -98,11 +98,17 @@ var ambientLight = new THREE.AmbientLight(0xffffff);
 
 // set sun and planets
 //sun
-var sunGeometry = new THREE.SphereGeometry( RADIUS_SUN, 80, 60, 0, Math.PI*2, 0, Math.PI );
-var sunTexture = new THREE.TextureLoader().load( './texture/2k_sun.jpg' );
-var sunMaterial = new THREE.MeshLambertMaterial( { emissive: 0xffffff,  emissiveMap: sunTexture, emmisiveIntensity: 0.2 } );
-var sun = new THREE.Mesh( sunGeometry, sunMaterial );
-scene.add( sun );
+var sunGeometry = new THREE.SphereGeometry(RADIUS_SUN, 64, 64);
+var sunSettings = {
+    geometry: sunGeometry,
+    material: new THREE.MeshLambertMaterial({
+        emissive: 0xffffff,
+        emissiveMap: new THREE.TextureLoader().load('./texture/2k_sun.jpg'),
+        emisiveIntensity: 0.2
+    })
+}
+var sun = new THREE.Mesh(sunSettings.geometry, sunSettings.material);
+scene.add(sun);
 
 var endPosX = sun.position.x + sunGeometry.parameters.radius;
 
@@ -125,7 +131,7 @@ var mercury = new THREE.Mesh(
     mercuryGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_mercury.jpg')
-        }));
+    }));
 mercury.position.set(endPosX + mercuryGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = mercury.position.x + mercuryGeometry.parameters.radius;
 planets.add( mercury );
@@ -136,7 +142,7 @@ var venus  = new THREE.Mesh(
     venusGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_venus_surface.jpg')
-        }));
+    }));
 venus.position.set(endPosX + venusGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = venus.position.x + venusGeometry.parameters.radius;
 planets.add( venus );
@@ -147,7 +153,7 @@ var earth  = new THREE.Mesh(
     earthGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_earth_daymap.jpg')
-        }));
+    }));
 earth.position.set(endPosX + earthGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = earth.position.x + earthGeometry.parameters.radius;
 planets.add( earth );
@@ -158,7 +164,7 @@ var mars = new THREE.Mesh(
     marsGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_mars.jpg')
-        }));
+    }));
 mars.position.set(endPosX + marsGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = mars.position.x + marsGeometry.parameters.radius;
 planets.add( mars );
@@ -169,7 +175,7 @@ var jupiter  = new THREE.Mesh(
     jupiterGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_jupiter.jpg')
-        }));
+    }));
 jupiter.position.set(endPosX + jupiterGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = jupiter.position.x + jupiterGeometry.parameters.radius;
 planets.add( jupiter );
@@ -180,7 +186,7 @@ var saturn = new THREE.Mesh(
     saturnGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_saturn.jpg')
-        }));
+    }));
 saturn.position.set(endPosX + saturnGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = saturn.position.x + saturnGeometry.parameters.radius;
 planets.add( saturn );
@@ -201,7 +207,7 @@ var uranus = new THREE.Mesh(
     uranusGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_uranus.jpg')
-        }));
+    }));
 uranus.position.set(endPosX + uranusGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = uranus.position.x + uranusGeometry.parameters.radius;
 planets.add( uranus );
@@ -212,7 +218,7 @@ var neptune = new THREE.Mesh(
     neptuneGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_neptune.jpg')
-        }));
+    }));
 neptune.position.set(endPosX + neptuneGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = neptune.position.x + neptuneGeometry.parameters.radius;
 planets.add( neptune );
