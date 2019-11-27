@@ -51,6 +51,10 @@ var scene = new THREE.Scene();
 // orbit controls
 var orbit = new OrbitControls( camera, renderer.domElement );
 orbit.enableZoom = true;
+// orbit.enableDamping = true;
+orbit.maxPolarAngle = Math.PI / 2;
+orbit.minDistance = 150;
+orbit.maxDistance = 1500;
 
 // set background mesh
 var bgTexture = new THREE.TextureLoader().load( './texture/8k_stars_milky_way.jpg' );
@@ -82,16 +86,19 @@ lights[ 1 ].position.set( 1000, 2000, 1000 );
 lights[ 2 ].position.set( - 1000, - 2000, - 1000 );
 lights[ 3 ].position.set( 0, 0, 0);
 
-scene.add( lights[ 0 ] );
-scene.add( lights[ 1 ] );
-scene.add( lights[ 2 ] );
+// scene.add( lights[ 0 ] );
+// scene.add( lights[ 1 ] );
+// scene.add( lights[ 2 ] );
 scene.add( lights[ 3 ] );
+
+var ambientLight = new THREE.AmbientLight(0xffffff);
+// scene.add(ambientLight);
 
 // set sun and planets
 //sun
 var sunGeometry = new THREE.SphereGeometry( RADIUS_SUN, 80, 60, 0, Math.PI*2, 0, Math.PI );
 var sunTexture = new THREE.TextureLoader().load( './texture/2k_sun.jpg' );
-var sunMaterial = new THREE.MeshLambertMaterial( { map: sunTexture } );
+var sunMaterial = new THREE.MeshLambertMaterial( { emissive: 0xffffff,  emissiveMap: sunTexture, emmisiveIntensity: 0.2 } );
 var sun = new THREE.Mesh( sunGeometry, sunMaterial );
 scene.add( sun );
 
@@ -104,7 +111,7 @@ var spriteMaterial = new THREE.SpriteMaterial(
     color: 0xfffb00, transparent: true, blending: THREE.AdditiveBlending
 });
 var sprite = new THREE.Sprite( spriteMaterial );
-sprite.scale.set(260, 260, 1.0);
+sprite.scale.set(250, 250, 1.0);
 sun.add( sprite );
 
 // planet group
@@ -200,13 +207,11 @@ var options = {
     orbit_animation: true,
     sun_light_only: false,
     true_size: false,
-    cameraposx: -300,
-    cameraposy: 400,
-    cameraposz: -300,
     earth_view: function (){
         camera.position.set(earth.position.x+150, earth.position.y+150, earth.position.z+150);
         camera.lookAt(earth.position.x, earth.position.y, earth.position.z);
     },
+    hide_background: false
 }
 
 // gui controls
@@ -218,10 +223,7 @@ folder.add(options, 'orbit_animation').name('Animate Orbit');
 folder.add(options, 'sun_light_only').name('Sun Light Only');
 folder.add(options, 'true_size').name('True Scale');
 folder.add(options, 'earth_view').name('Earth View');
-// folder.add(options, 'cameraposx', -500,500).step(5);
-// folder.add(options, 'cameraposy', -500,500).step(5);
-// folder.add(options, 'cameraposz', -500,500).step(5);
-
+folder.add(options, 'hide_background').name('Hide Background');
 
 // get planets orbit radius
 var mercuryOrbitRadius = mercury.position.x;
@@ -279,6 +281,9 @@ function animate() {
             planets.children[i].scale.set(1, 1, 1);
         }
     }
+
+    if (options.hide_background) {bg.material.color = new THREE.Color(0x000000);}
+    else {bg.material.color = new THREE.Color(0xFFFFFF);}
 
     renderer.render( scene, camera );
     t += Math.PI / 180 * 2;
