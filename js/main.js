@@ -11,6 +11,8 @@ let RADIUS_MULTIPLIER_VENUS = 0.008689696;
 let RADIUS_MULTIPLIER_MARS = 0.004866861;
 let RADIUS_MULTIPLIER_MERCURY = 0.003502589
 let RADIUS_MULPIPLIER_EARTH = 0.00914924;
+let WIDTH_SEGMENTS = 64;
+let HEIGHT_SEGMENTS = 64;
 
 let ORBIT_SPEED_MERCURY = 1/0.2;
 let ORBIT_SPEED_VENUS = 1/0.6;
@@ -118,55 +120,67 @@ sun.add( sprite );
 var planets = new THREE.Group();
 
 //mercury
-var mercuryGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_MERCURY * INNER_PLANET_RADIUS_MULTIPLIER, 80, 60, 0, Math.PI*2, 0, Math.PI );
-var mercuryTexture = new THREE.TextureLoader().load( './texture/2k_mercury.jpg' );
-var mercuryMaterial = new THREE.MeshLambertMaterial( { map: mercuryTexture } );
-var mercury = new THREE.Mesh( mercuryGeometry, mercuryMaterial );
+var mercuryGeometry = new THREE.SphereGeometry(RADIUS_SUN * RADIUS_MULTIPLIER_MERCURY * INNER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var mercury = new THREE.Mesh(
+    mercuryGeometry,
+    new THREE.MeshLambertMaterial({
+        map: new THREE.TextureLoader().load('./texture/2k_mercury.jpg')
+        }));
 mercury.position.set(endPosX + mercuryGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = mercury.position.x + mercuryGeometry.parameters.radius;
 planets.add( mercury );
 
 //venus
-var venusGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_VENUS * INNER_PLANET_RADIUS_MULTIPLIER, 80, 60, 0, Math.PI*2, 0, Math.PI );
-var venusTexture = new THREE.TextureLoader().load( './texture/2k_venus_surface.jpg' );
-var venusMaterial = new THREE.MeshLambertMaterial( { map: venusTexture } );
-var venus = new THREE.Mesh( venusGeometry, venusMaterial );
+var venusGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_VENUS * INNER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var venus  = new THREE.Mesh(
+    venusGeometry,
+    new THREE.MeshLambertMaterial({
+        map: new THREE.TextureLoader().load('./texture/2k_venus_surface.jpg')
+        }));
 venus.position.set(endPosX + venusGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = venus.position.x + venusGeometry.parameters.radius;
 planets.add( venus );
 
 //earth
-var earthGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULPIPLIER_EARTH * INNER_PLANET_RADIUS_MULTIPLIER, 80, 60, 0, Math.PI*2, 0, Math.PI );
-var earthTexture = new THREE.TextureLoader().load( './texture/2k_earth_daymap.jpg' );
-var earthMaterial = new THREE.MeshLambertMaterial( { map: earthTexture } );
-var earth = new THREE.Mesh( earthGeometry, earthMaterial );
+var earthGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULPIPLIER_EARTH * INNER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var earth  = new THREE.Mesh(
+    earthGeometry,
+    new THREE.MeshLambertMaterial({
+        map: new THREE.TextureLoader().load('./texture/2k_earth_daymap.jpg')
+        }));
 earth.position.set(endPosX + earthGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = earth.position.x + earthGeometry.parameters.radius;
 planets.add( earth );
 
 //mars
-var marsGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_MARS * INNER_PLANET_RADIUS_MULTIPLIER, 80, 60, 0, Math.PI*2, 0, Math.PI );
-var marsTexture = new THREE.TextureLoader().load( './texture/2k_mars.jpg' );
-var marsMaterial = new THREE.MeshLambertMaterial( { map: marsTexture } );
-var mars = new THREE.Mesh( marsGeometry, marsMaterial );
+var marsGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_MARS * INNER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var mars = new THREE.Mesh(
+    marsGeometry,
+    new THREE.MeshLambertMaterial({
+        map: new THREE.TextureLoader().load('./texture/2k_mars.jpg')
+        }));
 mars.position.set(endPosX + marsGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = mars.position.x + marsGeometry.parameters.radius;
 planets.add( mars );
 
 //jupiter
-var jupiterGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_JUPITER * OUTER_PLANET_RADIUS_MULTIPLIER, 80, 60, 0, Math.PI*2, 0, Math.PI );
-var jupiterTexture = new THREE.TextureLoader().load( './texture/2k_jupiter.jpg' );
-var jupiterMaterial = new THREE.MeshLambertMaterial( { map: jupiterTexture } );
-var jupiter = new THREE.Mesh( jupiterGeometry, jupiterMaterial );
+var jupiterGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_JUPITER * OUTER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var jupiter  = new THREE.Mesh(
+    jupiterGeometry,
+    new THREE.MeshLambertMaterial({
+        map: new THREE.TextureLoader().load('./texture/2k_jupiter.jpg')
+        }));
 jupiter.position.set(endPosX + jupiterGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = jupiter.position.x + jupiterGeometry.parameters.radius;
 planets.add( jupiter );
 
 //saturn
-var saturnGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_SATURN * OUTER_PLANET_RADIUS_MULTIPLIER, 80, 60, 0, Math.PI*2, 0, Math.PI );
-var saturnTexture = new THREE.TextureLoader().load( './texture/2k_saturn.jpg' );
-var saturnMaterial = new THREE.MeshLambertMaterial( { map: saturnTexture } );
-var saturn = new THREE.Mesh( saturnGeometry, saturnMaterial );
+var saturnGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_SATURN * OUTER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var saturn = new THREE.Mesh(
+    saturnGeometry,
+    new THREE.MeshLambertMaterial({
+        map: new THREE.TextureLoader().load('./texture/2k_saturn.jpg')
+        }));
 saturn.position.set(endPosX + saturnGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = saturn.position.x + saturnGeometry.parameters.radius;
 planets.add( saturn );
@@ -182,19 +196,23 @@ saturnR.rotateX(THREE.Math.degToRad(45));
 saturn.add( saturnR );
 
 //uranus
-var uranusGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_URANUS * OUTER_PLANET_RADIUS_MULTIPLIER, 80, 60, 0, Math.PI*2, 0, Math.PI );
-var uranusTexture = new THREE.TextureLoader().load( './texture/2k_uranus.jpg' );
-var uranusMaterial = new THREE.MeshLambertMaterial( { map: uranusTexture } );
-var uranus = new THREE.Mesh( uranusGeometry, uranusMaterial );
+var uranusGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_URANUS * OUTER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var uranus = new THREE.Mesh(
+    uranusGeometry,
+    new THREE.MeshLambertMaterial({
+        map: new THREE.TextureLoader().load('./texture/2k_uranus.jpg')
+        }));
 uranus.position.set(endPosX + uranusGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = uranus.position.x + uranusGeometry.parameters.radius;
 planets.add( uranus );
 
 //neptune
-var neptuneGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_NEPTUNE * OUTER_PLANET_RADIUS_MULTIPLIER, 80, 60, 0, Math.PI*2, 0, Math.PI );
-var neptuneTexture = new THREE.TextureLoader().load( './texture/2k_neptune.jpg' );
-var neptuneMaterial = new THREE.MeshLambertMaterial( { map: neptuneTexture } );
-var neptune = new THREE.Mesh( neptuneGeometry, neptuneMaterial );
+var neptuneGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_NEPTUNE * OUTER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var neptune = new THREE.Mesh(
+    neptuneGeometry,
+    new THREE.MeshLambertMaterial({
+        map: new THREE.TextureLoader().load('./texture/2k_neptune.jpg')
+        }));
 neptune.position.set(endPosX + neptuneGeometry.parameters.radius + distance_between, 0, 0);
 endPosX = neptune.position.x + neptuneGeometry.parameters.radius;
 planets.add( neptune );
