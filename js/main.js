@@ -82,16 +82,19 @@ lights[ 1 ].position.set( 1000, 2000, 1000 );
 lights[ 2 ].position.set( - 1000, - 2000, - 1000 );
 lights[ 3 ].position.set( 0, 0, 0);
 
-scene.add( lights[ 0 ] );
-scene.add( lights[ 1 ] );
-scene.add( lights[ 2 ] );
+// scene.add( lights[ 0 ] );
+// scene.add( lights[ 1 ] );
+// scene.add( lights[ 2 ] );
 scene.add( lights[ 3 ] );
+
+var ambientLight = new THREE.AmbientLight(0xffffff);
+// scene.add(ambientLight);
 
 // set sun and planets
 //sun
 var sunGeometry = new THREE.SphereGeometry( RADIUS_SUN, 80, 60, 0, Math.PI*2, 0, Math.PI );
 var sunTexture = new THREE.TextureLoader().load( './texture/2k_sun.jpg' );
-var sunMaterial = new THREE.MeshLambertMaterial( { map: sunTexture } );
+var sunMaterial = new THREE.MeshLambertMaterial( { emissive: 0xffffff,  emissiveMap: sunTexture, emmisiveIntensity: 0.2 } );
 var sun = new THREE.Mesh( sunGeometry, sunMaterial );
 scene.add( sun );
 
@@ -104,7 +107,7 @@ var spriteMaterial = new THREE.SpriteMaterial(
     color: 0xfffb00, transparent: true, blending: THREE.AdditiveBlending
 });
 var sprite = new THREE.Sprite( spriteMaterial );
-sprite.scale.set(260, 260, 1.0);
+sprite.scale.set(250, 250, 1.0);
 sun.add( sprite );
 
 // planet group
