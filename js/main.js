@@ -1,6 +1,7 @@
 import * as THREE from '../build/three.module.js/index.js';
 import {GUI} from './dat.gui.module.js';
 import { OrbitControls }  from './OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from './CSS2DRenderer.js';
 
 let RADIUS_SUN = 100;
 let RADIUS_MULTIPLIER_JUPITER = 0.100397506;
@@ -64,6 +65,7 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
+    labelRenderer.setSize( window.innerWidth, window.innerHeight );
 }
 
 // camera
@@ -79,13 +81,13 @@ document.body.appendChild( renderer.domElement );
 // set scene
 var scene = new THREE.Scene();
 
-// orbit controls
-var orbit = new OrbitControls( camera, renderer.domElement );
-orbit.enableZoom = true;
-// orbit.enableDamping = true;
-orbit.maxPolarAngle = Math.PI / 2;
-orbit.minDistance = 150;
-orbit.maxDistance = 1500;
+// // orbit controls
+// var orbit = new OrbitControls( camera, renderer.domElement );
+// orbit.enableZoom = true;
+// // orbit.enableDamping = true;
+// orbit.maxPolarAngle = Math.PI / 2;
+// orbit.minDistance = 150;
+// orbit.maxDistance = 1500;
 
 // set background mesh
 var bgTexture = new THREE.TextureLoader().load( './texture/8k_stars_milky_way.jpg' );
@@ -270,6 +272,84 @@ var mercuryOrbitMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, side:
 var mercuryOrbit = new THREE.Mesh(mercuryOrbitGeo, mercuryOrbitMaterial);
 mercuryOrbit.rotateX(Math.PI/2);
 scene.add(mercuryOrbit);
+// labels
+var mercuryDiv = document.createElement( 'div' );
+mercuryDiv.className = 'label';
+mercuryDiv.textContent = 'Mercury';
+mercuryDiv.style.marginTop = '-1em';
+var mercuryLabel = new CSS2DObject( mercuryDiv );
+mercuryLabel.position.set(0, RADIUS_PLANETS[0]+10, 0);
+mercury.add(mercuryLabel);
+
+var venusDiv = document.createElement( 'div' );
+venusDiv.className = 'label';
+venusDiv.textContent = 'Venus';
+venusDiv.style.marginTop = '-1em';
+var venusLabel = new CSS2DObject( venusDiv );
+venusLabel.position.set(0, RADIUS_PLANETS[1]+10, 0);
+venus.add(venusLabel);
+
+var earthDiv = document.createElement( 'div' );
+earthDiv.className = 'label';
+earthDiv.textContent = 'Earth';
+earthDiv.style.marginTop = '-1em';
+var earthLabel = new CSS2DObject( earthDiv );
+earthLabel.position.set(0, RADIUS_PLANETS[2]+10, 0);
+earth.add(earthLabel);
+
+var marsDiv = document.createElement( 'div' );
+marsDiv.className = 'label';
+marsDiv.textContent = 'Mars';
+marsDiv.style.marginTop = '-1em';
+var marsLabel = new CSS2DObject( marsDiv );
+marsLabel.position.set(0, RADIUS_PLANETS[3]+10, 0);
+mars.add(marsLabel);
+
+var jupiterDiv = document.createElement( 'div' );
+jupiterDiv.className = 'label';
+jupiterDiv.textContent = 'Jupiter';
+jupiterDiv.style.marginTop = '-1em';
+var jupiterLabel = new CSS2DObject( jupiterDiv );
+jupiterLabel.position.set(0, RADIUS_PLANETS[4]+10, 0);
+jupiter.add(jupiterLabel);
+
+var saturnDiv = document.createElement( 'div' );
+saturnDiv.className = 'label';
+saturnDiv.textContent = 'Saturn';
+saturnDiv.style.marginTop = '-1em';
+var saturnLabel = new CSS2DObject( saturnDiv );
+saturnLabel.position.set(0, RADIUS_PLANETS[5]+10, 0);
+saturn.add(saturnLabel);
+
+var uranusDiv = document.createElement( 'div' );
+uranusDiv.className = 'label';
+uranusDiv.textContent = 'Uranus';
+uranusDiv.style.marginTop = '-1em';
+var uranusLabel = new CSS2DObject( uranusDiv );
+uranusLabel.position.set(0, RADIUS_PLANETS[6]+10, 0);
+uranus.add(uranusLabel);
+
+var neptuneDiv = document.createElement( 'div' );
+neptuneDiv.className = 'label';
+neptuneDiv.textContent = 'Neptune';
+neptuneDiv.style.marginTop = '-1em';
+var neptuneLabel = new CSS2DObject( neptuneDiv );
+neptuneLabel.position.set(0, RADIUS_PLANETS[7]+10, 0);
+neptune.add(neptuneLabel);
+
+var labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize( window.innerWidth, window.innerHeight );
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = 0;
+document.body.appendChild( labelRenderer.domElement );
+
+// orbit controls
+var orbit = new OrbitControls( camera, labelRenderer.domElement );
+orbit.enableZoom = true;
+// orbit.enableDamping = true;
+orbit.maxPolarAngle = Math.PI / 2;
+orbit.minDistance = 150;
+orbit.maxDistance = 1500;
 
 // animation options
 var options = {
@@ -282,7 +362,8 @@ var options = {
         camera.lookAt(earth.position.x, earth.position.y, earth.position.z);
     },
     hide_background: false,
-    distance_multiplier: 1
+    distance_multiplier: 1,
+    show_labels: false
     // distance_between: 0
 }
 
@@ -297,6 +378,7 @@ folder.add(options, 'true_size').name('True Size');
 folder.add(options, 'earth_view').name('Earth View');
 folder.add(options, 'hide_background').name('Hide Background');
 folder.add(options, 'distance_multiplier', 1, 2).name('Distance Multiplier');
+folder.add(options, 'show_labels').name('Show Labels');
 
 // start at t
 // all planets lined up at t = 0
@@ -331,11 +413,32 @@ function animate() {
             planets.children[i].scale.set(1, 1, 1);
         }
     }
+    // show/hide planet labels
+    if (options.show_labels) {
+        mercuryLabel.visible = true;
+        venusLabel.visible = true;
+        earthLabel.visible = true;
+        marsLabel.visible = true;
+        jupiterLabel.visible = true;
+        saturnLabel.visible = true;
+        uranusLabel.visible = true;
+        neptuneLabel.visible = true;
+    } else {
+        mercuryLabel.visible = false;
+        venusLabel.visible = false;
+        earthLabel.visible = false;
+        marsLabel.visible = false;
+        jupiterLabel.visible = false;
+        saturnLabel.visible = false;
+        uranusLabel.visible = false;
+        neptuneLabel.visible = false;
+    }
 
     if (options.hide_background) {bg.material.color = new THREE.Color(0x000000);}
     else {bg.material.color = new THREE.Color(0xFFFFFF);}
 
     renderer.render( scene, camera );
+    labelRenderer.render( scene, camera);
 
     if (options.orbit_animation){t += Math.PI / 180 * 2;}
 }
