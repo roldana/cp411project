@@ -10,7 +10,7 @@ let RADIUS_MULTIPLIER_NEPTUNE = 0.035359062;
 let RADIUS_MULTIPLIER_VENUS = 0.008689696;
 let RADIUS_MULTIPLIER_MARS = 0.004866861;
 let RADIUS_MULTIPLIER_MERCURY = 0.003502589
-let RADIUS_MULPIPLIER_EARTH = 0.00914924;
+let RADIUS_MULTIPLIER_EARTH = 0.00914924;
 let WIDTH_SEGMENTS = 64;
 let HEIGHT_SEGMENTS = 64;
 
@@ -23,11 +23,40 @@ let ORBIT_SPEED_SATURN = 1/29.5;
 let ORBIT_SPEED_URANUS = 1/84;
 let ORBIT_SPEED_NEPTUNE = 1/164.8;
 
+let ORBIT_SPEED = [
+    1/0.2,
+    1/0.6,
+    1,
+    1/1.9,
+    1/11.9,
+    1/29.5,
+    1/84,
+    1/164.8
+]
+
 let INNER_PLANET_RADIUS_MULTIPLIER = 15;
 let OUTER_PLANET_RADIUS_MULTIPLIER = 4.5;
 
-var distance_between = 50;
+let RADIUS_PLANETS =
+[
+    (RADIUS_SUN * RADIUS_MULTIPLIER_MERCURY * INNER_PLANET_RADIUS_MULTIPLIER),
+    (RADIUS_SUN * RADIUS_MULTIPLIER_VENUS * INNER_PLANET_RADIUS_MULTIPLIER),
+    (RADIUS_SUN * RADIUS_MULTIPLIER_EARTH * INNER_PLANET_RADIUS_MULTIPLIER),
+    (RADIUS_SUN * RADIUS_MULTIPLIER_MARS * INNER_PLANET_RADIUS_MULTIPLIER),
+    (RADIUS_SUN * RADIUS_MULTIPLIER_JUPITER * OUTER_PLANET_RADIUS_MULTIPLIER),
+    (RADIUS_SUN * RADIUS_MULTIPLIER_SATURN * OUTER_PLANET_RADIUS_MULTIPLIER),
+    (RADIUS_SUN * RADIUS_MULTIPLIER_URANUS * OUTER_PLANET_RADIUS_MULTIPLIER),
+    (RADIUS_SUN * RADIUS_MULTIPLIER_NEPTUNE * OUTER_PLANET_RADIUS_MULTIPLIER),
+]
 
+
+// set orbit radius for each
+let FIXED_SPACING = 50;
+var orbit_radius = [];
+orbit_radius[0] = (RADIUS_SUN + RADIUS_PLANETS[0] + FIXED_SPACING);
+for (var i = 1; i < RADIUS_PLANETS.length; i++) {
+    orbit_radius[i] = (orbit_radius[i-1] + RADIUS_PLANETS[i]*2 + FIXED_SPACING);
+};
 
 // window resize listener
 window.addEventListener( 'resize', onWindowResize, false );
@@ -126,73 +155,73 @@ sun.add( sprite );
 var planets = new THREE.Group();
 
 //mercury
-var mercuryGeometry = new THREE.SphereGeometry(RADIUS_SUN * RADIUS_MULTIPLIER_MERCURY * INNER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var mercuryGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[0], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var mercury = new THREE.Mesh(
     mercuryGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_mercury.jpg')
     }));
-mercury.position.set(endPosX + mercuryGeometry.parameters.radius + distance_between, 0, 0);
+mercury.position.set(endPosX + mercuryGeometry.parameters.radius + FIXED_SPACING, 0, 0);
 endPosX = mercury.position.x + mercuryGeometry.parameters.radius;
 planets.add( mercury );
 
 //venus
-var venusGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_VENUS * INNER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var venusGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[1], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var venus  = new THREE.Mesh(
     venusGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_venus_surface.jpg')
     }));
-venus.position.set(endPosX + venusGeometry.parameters.radius + distance_between, 0, 0);
+venus.position.set(endPosX + venusGeometry.parameters.radius + FIXED_SPACING, 0, 0);
 endPosX = venus.position.x + venusGeometry.parameters.radius;
 planets.add( venus );
 
 //earth
-var earthGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULPIPLIER_EARTH * INNER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var earthGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[2], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var earth  = new THREE.Mesh(
     earthGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_earth_daymap.jpg')
     }));
-earth.position.set(endPosX + earthGeometry.parameters.radius + distance_between, 0, 0);
+earth.position.set(endPosX + earthGeometry.parameters.radius + FIXED_SPACING, 0, 0);
 endPosX = earth.position.x + earthGeometry.parameters.radius;
 planets.add( earth );
 
 //mars
-var marsGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_MARS * INNER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var marsGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[3], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var mars = new THREE.Mesh(
     marsGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_mars.jpg')
     }));
-mars.position.set(endPosX + marsGeometry.parameters.radius + distance_between, 0, 0);
+mars.position.set(endPosX + marsGeometry.parameters.radius + FIXED_SPACING, 0, 0);
 endPosX = mars.position.x + marsGeometry.parameters.radius;
 planets.add( mars );
 
 //jupiter
-var jupiterGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_JUPITER * OUTER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var jupiterGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[4], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var jupiter  = new THREE.Mesh(
     jupiterGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_jupiter.jpg')
     }));
-jupiter.position.set(endPosX + jupiterGeometry.parameters.radius + distance_between, 0, 0);
+jupiter.position.set(endPosX + jupiterGeometry.parameters.radius + FIXED_SPACING, 0, 0);
 endPosX = jupiter.position.x + jupiterGeometry.parameters.radius;
 planets.add( jupiter );
 
 //saturn
-var saturnGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_SATURN * OUTER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var saturnGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[5], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var saturn = new THREE.Mesh(
     saturnGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_saturn.jpg')
     }));
-saturn.position.set(endPosX + saturnGeometry.parameters.radius + distance_between, 0, 0);
+saturn.position.set(endPosX + saturnGeometry.parameters.radius + FIXED_SPACING, 0, 0);
 endPosX = saturn.position.x + saturnGeometry.parameters.radius;
 planets.add( saturn );
 
 //saturn rings
-var saturnRGeometry = new THREE.RingBufferGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_SATURN * OUTER_PLANET_RADIUS_MULTIPLIER *  1.2, RADIUS_SUN * RADIUS_MULTIPLIER_SATURN * OUTER_PLANET_RADIUS_MULTIPLIER* 1.95, 64);
+var saturnRGeometry = new THREE.RingBufferGeometry(RADIUS_PLANETS[5] *  1.2, RADIUS_SUN * RADIUS_MULTIPLIER_SATURN * OUTER_PLANET_RADIUS_MULTIPLIER* 1.95, 64);
 
 var saturnRTexture = new THREE.TextureLoader().load( './texture/saturn_ring2.jpg' );
 var saturnRMaterial = new THREE.MeshLambertMaterial( { map: saturnRTexture, side: THREE.DoubleSide, transparent: false } );
@@ -202,24 +231,24 @@ saturnR.rotateX(THREE.Math.degToRad(45));
 saturn.add( saturnR );
 
 //uranus
-var uranusGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_URANUS * OUTER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var uranusGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[6], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var uranus = new THREE.Mesh(
     uranusGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_uranus.jpg')
     }));
-uranus.position.set(endPosX + uranusGeometry.parameters.radius + distance_between, 0, 0);
+uranus.position.set(endPosX + uranusGeometry.parameters.radius + FIXED_SPACING, 0, 0);
 endPosX = uranus.position.x + uranusGeometry.parameters.radius;
 planets.add( uranus );
 
 //neptune
-var neptuneGeometry = new THREE.SphereGeometry( RADIUS_SUN * RADIUS_MULTIPLIER_NEPTUNE * OUTER_PLANET_RADIUS_MULTIPLIER, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var neptuneGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[7], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var neptune = new THREE.Mesh(
     neptuneGeometry,
     new THREE.MeshLambertMaterial({
         map: new THREE.TextureLoader().load('./texture/2k_neptune.jpg')
     }));
-neptune.position.set(endPosX + neptuneGeometry.parameters.radius + distance_between, 0, 0);
+neptune.position.set(endPosX + neptuneGeometry.parameters.radius + FIXED_SPACING, 0, 0);
 endPosX = neptune.position.x + neptuneGeometry.parameters.radius;
 planets.add( neptune );
 
@@ -235,60 +264,40 @@ var options = {
         camera.position.set(earth.position.x+150, earth.position.y+150, earth.position.z+150);
         camera.lookAt(earth.position.x, earth.position.y, earth.position.z);
     },
-    hide_background: false
+    hide_background: false,
+    distance_multiplier: 1
+    // distance_between: 0
 }
 
 // gui controls
 var gui = new GUI();
 var folder = gui.addFolder( 'Solar System Control' );
 folder.open();
-folder.add(options, 'orbit_speed_multiplier', 0.02, 0.1 ).name('Orbit Speed');
+folder.add(options, 'orbit_speed_multiplier', 0.02, 0.35 ).name('Simulation Speed');
 folder.add(options, 'orbit_animation').name('Animate Orbit');
 folder.add(options, 'sun_light_only').name('Sun Light Only');
-folder.add(options, 'true_size').name('True Scale');
+folder.add(options, 'true_size').name('True Size');
 folder.add(options, 'earth_view').name('Earth View');
 folder.add(options, 'hide_background').name('Hide Background');
+folder.add(options, 'distance_multiplier', 1, 2).name('Distance Multiplier');
 
-// get planets orbit radius
-var mercuryOrbitRadius = mercury.position.x;
-var venusOrbitRadius = venus.position.x;
-var earthOrbitRadius = earth.position.x;
-var marsOrbitRadius = mars.position.x;
-var jupiterOrbitRadius = jupiter.position.x;
-var saturnOrbitRadius = saturn.position.x;
-var uranusOrbitRadius = uranus.position.x;
-var neptuneOrbitRadius = neptune.position.x;
-
-var t = 0;
+// start at t
+// all planets lined up at t = 0
+var t = 500;
 
 function animate() {
     requestAnimationFrame( animate );
 
     //animate orbits
     if (options.orbit_animation) {
-        mercury.position.x = Math.sin(t * ORBIT_SPEED_MERCURY * options.orbit_speed_multiplier) * mercuryOrbitRadius;
-        mercury.position.z = Math.cos(t * ORBIT_SPEED_MERCURY * options.orbit_speed_multiplier) * mercuryOrbitRadius;
+        for (var i = 0; i < planets.children.length; i++){
+            planets.children[i].position.set(
+                Math.sin(t * ORBIT_SPEED[i] * options.orbit_speed_multiplier) * (orbit_radius[i] * options.distance_multiplier),
+                0,
+                Math.cos(t * ORBIT_SPEED[i] * options.orbit_speed_multiplier) * (orbit_radius[i] * options.distance_multiplier)
+            )
+        };
 
-        venus.position.x = Math.sin(t * ORBIT_SPEED_VENUS * options.orbit_speed_multiplier) * venusOrbitRadius;
-        venus.position.z = Math.cos(t * ORBIT_SPEED_VENUS * options.orbit_speed_multiplier) * venusOrbitRadius;
-
-        earth.position.x = Math.sin(t * ORBIT_SPEED_EARTH * options.orbit_speed_multiplier) * earthOrbitRadius;
-        earth.position.z = Math.cos(t * ORBIT_SPEED_EARTH * options.orbit_speed_multiplier) * earthOrbitRadius;
-
-        mars.position.x = Math.sin(t * ORBIT_SPEED_MARS * options.orbit_speed_multiplier) * marsOrbitRadius;
-        mars.position.z = Math.cos(t * ORBIT_SPEED_MARS * options.orbit_speed_multiplier) * marsOrbitRadius;
-
-        jupiter.position.x = Math.sin(t * ORBIT_SPEED_JUPITER * options.orbit_speed_multiplier) * jupiterOrbitRadius;
-        jupiter.position.z = Math.cos(t * ORBIT_SPEED_JUPITER * options.orbit_speed_multiplier) * jupiterOrbitRadius;
-
-        saturn.position.x = Math.sin(t * ORBIT_SPEED_SATURN * options.orbit_speed_multiplier) * saturnOrbitRadius;
-        saturn.position.z = Math.cos(t * ORBIT_SPEED_SATURN * options.orbit_speed_multiplier) * saturnOrbitRadius;
-
-        uranus.position.x = Math.sin(t * ORBIT_SPEED_URANUS * options.orbit_speed_multiplier) * uranusOrbitRadius;
-        uranus.position.z = Math.cos(t * ORBIT_SPEED_URANUS * options.orbit_speed_multiplier) * uranusOrbitRadius;
-
-        neptune.position.x = Math.sin(t * ORBIT_SPEED_NEPTUNE * options.orbit_speed_multiplier) * neptuneOrbitRadius;
-        neptune.position.z = Math.cos(t * ORBIT_SPEED_NEPTUNE * options.orbit_speed_multiplier) * neptuneOrbitRadius;
     }
 
     if(options.true_size) {
@@ -310,7 +319,8 @@ function animate() {
     else {bg.material.color = new THREE.Color(0xFFFFFF);}
 
     renderer.render( scene, camera );
-    t += Math.PI / 180 * 2;
+
+    if (options.orbit_animation){t += Math.PI / 180 * 2;}
 }
 
 animate();
