@@ -91,6 +91,8 @@ camera.position.set(-300, 400, -300);
 var renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild( renderer.domElement );
 
 // set scene
@@ -122,25 +124,16 @@ var bg = new THREE.Mesh(
 )
 scene.add(bg);
 
-//lights
-var lights = [];
-lights[ 0 ] = new THREE.PointLight( 0xffffff, 1, 0 );
-lights[ 1 ] = new THREE.PointLight( 0xffffff, 1, 0 );
-lights[ 2 ] = new THREE.PointLight( 0xffffff, 1, 0 );
-lights[ 3 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+// sunlight
+var sunlight = new THREE.PointLight( 0xffffff, 1, 0 );
+sunlight.castShadow = true;
+sunlight.shadowDarkness = 0.9;
+scene.add(sunlight);
 
-lights[ 0 ].position.set( 0, 2000, 0 );
-lights[ 1 ].position.set( 1000, 2000, 1000 );
-lights[ 2 ].position.set( - 1000, - 2000, - 1000 );
-lights[ 3 ].position.set( 0, 0, 0);
-
-// scene.add( lights[ 0 ] );
-// scene.add( lights[ 1 ] );
-// scene.add( lights[ 2 ] );
-scene.add( lights[ 3 ] );
-
-var ambientLight = new THREE.AmbientLight(0xffffff);
-// scene.add(ambientLight);
+// ambient light
+var ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+ambientLight.visible = false;
+scene.add(ambientLight);
 
 // set sun and planets
 //sun
@@ -251,6 +244,7 @@ var saturnR = new THREE.Mesh( saturnRGeometry, saturnRMaterial );
 saturnR.rotateX(THREE.Math.degToRad(90));
 // apply saturn tilt
 saturn.rotateX(THREE.Math.degToRad(26.73));
+saturnR.receiveShadow = true;
 saturn.add( saturnR );
 
 
@@ -370,6 +364,7 @@ var options = {
         camera.lookAt(earth.position.x, earth.position.y, earth.position.z);
     },
     hide_background: false,
+    enable_shadows: false,
     distance_multiplier: 1,
     show_labels: false,
     animate_rotation: false
@@ -386,6 +381,10 @@ folder.add(options, 'sun_light_only').name('Sun Light Only');
 folder.add(options, 'true_size').name('True Size');
 folder.add(options, 'earth_view').name('Earth View');
 folder.add(options, 'hide_background').name('Hide Background');
+// folder.add(ambientLight, 'intensity', 0, 0.5).name('Ambient Light Intensity');
+folder.add(ambientLight, 'visible').name('Ambient Light');
+// folder.add(renderer, 'shadowMapEnabled').name('Enable Shadows');
+folder.add(options, 'enable_shadows').name('Shadows');
 folder.add(options, 'distance_multiplier', 1, 2).name('Distance Multiplier');
 folder.add(options, 'show_labels').name('Show Labels');
 folder.add(options, 'animate_rotation').name('Animate Rotation');
@@ -455,6 +454,18 @@ function animate() {
     if (options.hide_background) {bg.material.color = new THREE.Color(0x000000);}
     else {bg.material.color = new THREE.Color(0xFFFFFF);}
 
+    if (options.enable_shadows){
+        for (var i = 0; i < planets.children.length; i++) {
+            planets.children[i].castShadow = true;
+            planets.children[i].receiveShadow = true;
+        }
+    } else {
+        for (var i = 0; i < planets.children.length; i++){
+            planets.children[i].castShadow = false;
+            planets.children[i].receiveShadow = false;
+        }
+    }
+    
     renderer.render( scene, camera );
     labelRenderer.render( scene, camera);
 
