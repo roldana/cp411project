@@ -256,22 +256,6 @@ planets.add( neptune );
 
 scene.add( planets );
 
-// orbit rings
-var mercuryOrbitGeo = new THREE.RingGeometry(orbit_radius[0], orbit_radius[0]+0.2, 128);
-// var venusOrbitGeo = new THREE.RingGeometry();
-// var earthOrbitGeo = new THREE.RingGeometry();
-// var marsOrbitGeo = new THREE.RingGeometry();
-// var jupiterOrbitGeo = new THREE.RingGeometry();
-// var saturnOrbitGeo = new THREE.RingGeometry();
-// var neptuneOrbitGeo = new THREE.RingGeometry();
-// var uranusOrbitGeo = new THREE.RingGeometry();
-// var plutoOrbitGeo = new THREE.RingGeometry();
-
-var mercuryOrbitMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.DoubleSide} );
-
-var mercuryOrbit = new THREE.Mesh(mercuryOrbitGeo, mercuryOrbitMaterial);
-mercuryOrbit.rotateX(Math.PI/2);
-scene.add(mercuryOrbit);
 // labels
 var mercuryDiv = document.createElement( 'div' );
 mercuryDiv.className = 'label';
