@@ -24,6 +24,21 @@ let ORBIT_SPEED_SATURN = 1/29.5;
 let ORBIT_SPEED_URANUS = 1/84;
 let ORBIT_SPEED_NEPTUNE = 1/164.8;
 
+let ROTATION_MULTIPLIER = 0.005;
+
+let AXIS_ROTATION_SUN = 1/27;
+
+let AXIS_ROTATION = [
+    1/58.66,
+    1/243,
+    1,
+    1/1.04,
+    1/0.41,
+    1/0.45,
+    1/0.70,
+    1/0.66
+]
+
 let ORBIT_SPEED = [
     1/0.2,
     1/0.6,
@@ -164,6 +179,7 @@ var mercury = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_mercury.jpg')
     }));
 mercury.position.set(endPosX + mercuryGeometry.parameters.radius + FIXED_SPACING, 0, 0);
+mercury.rotateX(THREE.Math.degToRad(0.03));
 endPosX = mercury.position.x + mercuryGeometry.parameters.radius;
 planets.add( mercury );
 
@@ -175,6 +191,7 @@ var venus  = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_venus_surface.jpg')
     }));
 venus.position.set(endPosX + venusGeometry.parameters.radius + FIXED_SPACING, 0, 0);
+venus.rotateX(THREE.Math.degToRad(2.64));
 endPosX = venus.position.x + venusGeometry.parameters.radius;
 planets.add( venus );
 
@@ -186,6 +203,7 @@ var earth  = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_earth_daymap.jpg')
     }));
 earth.position.set(endPosX + earthGeometry.parameters.radius + FIXED_SPACING, 0, 0);
+earth.rotateX(THREE.Math.degToRad(23.44));
 endPosX = earth.position.x + earthGeometry.parameters.radius;
 planets.add( earth );
 
@@ -197,6 +215,7 @@ var mars = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_mars.jpg')
     }));
 mars.position.set(endPosX + marsGeometry.parameters.radius + FIXED_SPACING, 0, 0);
+mars.rotateX(THREE.Math.degToRad(25.19));
 endPosX = mars.position.x + marsGeometry.parameters.radius;
 planets.add( mars );
 
@@ -208,6 +227,7 @@ var jupiter  = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_jupiter.jpg')
     }));
 jupiter.position.set(endPosX + jupiterGeometry.parameters.radius + FIXED_SPACING, 0, 0);
+jupiter.rotateX(THREE.Math.degToRad(3.13));
 endPosX = jupiter.position.x + jupiterGeometry.parameters.radius;
 planets.add( jupiter );
 
@@ -223,14 +243,16 @@ endPosX = saturn.position.x + saturnGeometry.parameters.radius;
 planets.add( saturn );
 
 //saturn rings
-var saturnRGeometry = new THREE.RingBufferGeometry(RADIUS_PLANETS[5] *  1.2, RADIUS_SUN * RADIUS_MULTIPLIER_SATURN * OUTER_PLANET_RADIUS_MULTIPLIER* 1.95, 64);
-
+var saturnRGeometry = new THREE.RingBufferGeometry(RADIUS_PLANETS[5] *  1.2, RADIUS_SUN * RADIUS_MULTIPLIER_SATURN * OUTER_PLANET_RADIUS_MULTIPLIER * 1.95, 64);
 var saturnRTexture = new THREE.TextureLoader().load( './texture/saturn_ring2.jpg' );
 var saturnRMaterial = new THREE.MeshLambertMaterial( { map: saturnRTexture, side: THREE.DoubleSide, transparent: false } );
 var saturnR = new THREE.Mesh( saturnRGeometry, saturnRMaterial );
-saturnR.rotateY(THREE.Math.degToRad(90));
-saturnR.rotateX(THREE.Math.degToRad(45));
+// rotate ring
+saturnR.rotateX(THREE.Math.degToRad(90));
+// apply saturn tilt
+saturn.rotateX(THREE.Math.degToRad(26.73));
 saturn.add( saturnR );
+
 
 //uranus
 var uranusGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[6], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
@@ -240,6 +262,7 @@ var uranus = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_uranus.jpg')
     }));
 uranus.position.set(endPosX + uranusGeometry.parameters.radius + FIXED_SPACING, 0, 0);
+uranus.rotateX(THREE.Math.degToRad(82.23));
 endPosX = uranus.position.x + uranusGeometry.parameters.radius;
 planets.add( uranus );
 
@@ -251,6 +274,7 @@ var neptune = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_neptune.jpg')
     }));
 neptune.position.set(endPosX + neptuneGeometry.parameters.radius + FIXED_SPACING, 0, 0);
+neptune.rotateX(THREE.Math.degToRad(28.32));
 endPosX = neptune.position.x + neptuneGeometry.parameters.radius;
 planets.add( neptune );
 
@@ -347,7 +371,8 @@ var options = {
     },
     hide_background: false,
     distance_multiplier: 1,
-    show_labels: false
+    show_labels: false,
+    animate_rotation: false
     // distance_between: 0
 }
 
@@ -363,6 +388,7 @@ folder.add(options, 'earth_view').name('Earth View');
 folder.add(options, 'hide_background').name('Hide Background');
 folder.add(options, 'distance_multiplier', 1, 2).name('Distance Multiplier');
 folder.add(options, 'show_labels').name('Show Labels');
+folder.add(options, 'animate_rotation').name('Animate Rotation');
 
 // start at t
 // all planets lined up at t = 0
@@ -370,6 +396,14 @@ var t = 500;
 
 function animate() {
     requestAnimationFrame( animate );
+
+    // animate axis rotation
+    if(options.animate_rotation) {
+        sun.rotation.y += ROTATION_MULTIPLIER * AXIS_ROTATION_SUN;
+        for (var i = 0; i < planets.children.length; i++){
+            planets.children[i].rotation.y += ROTATION_MULTIPLIER * AXIS_ROTATION[i];
+        };
+    }
 
     //animate orbits
     if (options.orbit_animation) {
