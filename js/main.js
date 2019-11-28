@@ -15,17 +15,22 @@ let RADIUS_MULTIPLIER_EARTH = 0.00914924;
 let WIDTH_SEGMENTS = 64;
 let HEIGHT_SEGMENTS = 64;
 
-let ORBIT_SPEED_MERCURY = 1/0.2;
-let ORBIT_SPEED_VENUS = 1/0.6;
-let ORBIT_SPEED_EARTH = 1;
-let ORBIT_SPEED_MARS = 1/1.9;
-let ORBIT_SPEED_JUPITER = 1/11.9;
-let ORBIT_SPEED_SATURN = 1/29.5;
-let ORBIT_SPEED_URANUS = 1/84;
-let ORBIT_SPEED_NEPTUNE = 1/164.8;
+let INNER_PLANET_RADIUS_MULTIPLIER = 15;
+let OUTER_PLANET_RADIUS_MULTIPLIER = 4.5;
 
-let ROTATION_MULTIPLIER = 0.005;
+let RADIUS_PLANETS =
+[
+    (RADIUS_SUN * RADIUS_MULTIPLIER_MERCURY * INNER_PLANET_RADIUS_MULTIPLIER),
+    (RADIUS_SUN * RADIUS_MULTIPLIER_VENUS * INNER_PLANET_RADIUS_MULTIPLIER),
+    (RADIUS_SUN * RADIUS_MULTIPLIER_EARTH * INNER_PLANET_RADIUS_MULTIPLIER),
+    (RADIUS_SUN * RADIUS_MULTIPLIER_MARS * INNER_PLANET_RADIUS_MULTIPLIER),
+    (RADIUS_SUN * RADIUS_MULTIPLIER_JUPITER * OUTER_PLANET_RADIUS_MULTIPLIER),
+    (RADIUS_SUN * RADIUS_MULTIPLIER_SATURN * OUTER_PLANET_RADIUS_MULTIPLIER),
+    (RADIUS_SUN * RADIUS_MULTIPLIER_URANUS * OUTER_PLANET_RADIUS_MULTIPLIER),
+    (RADIUS_SUN * RADIUS_MULTIPLIER_NEPTUNE * OUTER_PLANET_RADIUS_MULTIPLIER),
+]
 
+let AXIS_ROTATION_MULTIPLIER = 0.005;
 let AXIS_ROTATION_SUN = 1/27;
 
 let AXIS_ROTATION = [
@@ -50,30 +55,6 @@ let ORBIT_SPEED = [
     1/164.8
 ]
 
-let INNER_PLANET_RADIUS_MULTIPLIER = 15;
-let OUTER_PLANET_RADIUS_MULTIPLIER = 4.5;
-
-let RADIUS_PLANETS =
-[
-    (RADIUS_SUN * RADIUS_MULTIPLIER_MERCURY * INNER_PLANET_RADIUS_MULTIPLIER),
-    (RADIUS_SUN * RADIUS_MULTIPLIER_VENUS * INNER_PLANET_RADIUS_MULTIPLIER),
-    (RADIUS_SUN * RADIUS_MULTIPLIER_EARTH * INNER_PLANET_RADIUS_MULTIPLIER),
-    (RADIUS_SUN * RADIUS_MULTIPLIER_MARS * INNER_PLANET_RADIUS_MULTIPLIER),
-    (RADIUS_SUN * RADIUS_MULTIPLIER_JUPITER * OUTER_PLANET_RADIUS_MULTIPLIER),
-    (RADIUS_SUN * RADIUS_MULTIPLIER_SATURN * OUTER_PLANET_RADIUS_MULTIPLIER),
-    (RADIUS_SUN * RADIUS_MULTIPLIER_URANUS * OUTER_PLANET_RADIUS_MULTIPLIER),
-    (RADIUS_SUN * RADIUS_MULTIPLIER_NEPTUNE * OUTER_PLANET_RADIUS_MULTIPLIER),
-]
-
-
-// set orbit radius for each
-let FIXED_SPACING = 50;
-var orbit_radius = [];
-orbit_radius[0] = (RADIUS_SUN + RADIUS_PLANETS[0] + FIXED_SPACING);
-for (var i = 1; i < RADIUS_PLANETS.length; i++) {
-    orbit_radius[i] = (orbit_radius[i-1] + RADIUS_PLANETS[i]*2 + FIXED_SPACING);
-};
-
 // window resize listener
 window.addEventListener( 'resize', onWindowResize, false );
 function onWindowResize() {
@@ -95,16 +76,30 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild( renderer.domElement );
 
+// label renderer
+var labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize( window.innerWidth, window.innerHeight );
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = 0;
+document.body.appendChild( labelRenderer.domElement );
+
+// initialize orbit controls
+var orbit = new OrbitControls( camera, labelRenderer.domElement );
+orbit.enableZoom = true;
+orbit.maxPolarAngle = Math.PI / 2;
+orbit.minDistance = 150;
+orbit.maxDistance = 1500;
+
+// set orbit radius for each planet
+let FIXED_SPACING = 50;
+var orbit_radius = [];
+orbit_radius[0] = (RADIUS_SUN + RADIUS_PLANETS[0] + FIXED_SPACING);
+for (var i = 1; i < RADIUS_PLANETS.length; i++) {
+    orbit_radius[i] = (orbit_radius[i-1] + RADIUS_PLANETS[i]*2 + FIXED_SPACING);
+};
+
 // set scene
 var scene = new THREE.Scene();
-
-// // orbit controls
-// var orbit = new OrbitControls( camera, renderer.domElement );
-// orbit.enableZoom = true;
-// // orbit.enableDamping = true;
-// orbit.maxPolarAngle = Math.PI / 2;
-// orbit.minDistance = 150;
-// orbit.maxDistance = 1500;
 
 // set background mesh
 var bgTexture = new THREE.TextureLoader().load( './texture/8k_stars_milky_way.jpg' );
@@ -136,7 +131,7 @@ ambientLight.visible = false;
 scene.add(ambientLight);
 
 // set sun and planets
-//sun
+// sun
 var sunGeometry = new THREE.SphereGeometry(RADIUS_SUN, 64, 64);
 var sunSettings = {
     geometry: sunGeometry,
@@ -151,14 +146,14 @@ scene.add(sun);
 
 var endPosX = sun.position.x + sunGeometry.parameters.radius;
 
-//sun glow
+// sun glow
 var spriteMaterial = new THREE.SpriteMaterial( 
 {
     map: new THREE.TextureLoader().load( './texture/glow.png' ), 
     color: 0xfffb00, transparent: true, blending: THREE.AdditiveBlending
 });
 var sprite = new THREE.Sprite( spriteMaterial );
-sprite.scale.set(250, 250, 1.0);
+sprite.scale.set(260, 260, 1.0);
 sun.add( sprite );
 
 // planet group
@@ -232,6 +227,7 @@ var saturn = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_saturn.jpg')
     }));
 saturn.position.set(endPosX + saturnGeometry.parameters.radius + FIXED_SPACING, 0, 0);
+saturn.rotateX(THREE.Math.degToRad(26.73));
 endPosX = saturn.position.x + saturnGeometry.parameters.radius;
 planets.add( saturn );
 
@@ -242,11 +238,8 @@ var saturnRMaterial = new THREE.MeshLambertMaterial( { map: saturnRTexture, side
 var saturnR = new THREE.Mesh( saturnRGeometry, saturnRMaterial );
 // rotate ring
 saturnR.rotateX(THREE.Math.degToRad(90));
-// apply saturn tilt
-saturn.rotateX(THREE.Math.degToRad(26.73));
 saturnR.receiveShadow = true;
 saturn.add( saturnR );
-
 
 //uranus
 var uranusGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[6], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
@@ -339,25 +332,10 @@ var neptuneLabel = new CSS2DObject( neptuneDiv );
 neptuneLabel.position.set(0, RADIUS_PLANETS[7]+10, 0);
 neptune.add(neptuneLabel);
 
-var labelRenderer = new CSS2DRenderer();
-labelRenderer.setSize( window.innerWidth, window.innerHeight );
-labelRenderer.domElement.style.position = 'absolute';
-labelRenderer.domElement.style.top = 0;
-document.body.appendChild( labelRenderer.domElement );
-
-// orbit controls
-var orbit = new OrbitControls( camera, labelRenderer.domElement );
-orbit.enableZoom = true;
-// orbit.enableDamping = true;
-orbit.maxPolarAngle = Math.PI / 2;
-orbit.minDistance = 150;
-orbit.maxDistance = 1500;
-
 // animation options
 var options = {
     orbit_speed_multiplier: 0.05,
     orbit_animation: true,
-    sun_light_only: false,
     true_size: false,
     earth_view: function (){
         camera.position.set(earth.position.x+150, earth.position.y+150, earth.position.z+150);
@@ -368,26 +346,28 @@ var options = {
     distance_multiplier: 1,
     show_labels: false,
     animate_rotation: false
-    // distance_between: 0
 }
 
 // gui controls
 var gui = new GUI();
 var folder = gui.addFolder( 'Solar System Control' );
-folder.open();
-folder.add(options, 'orbit_speed_multiplier', 0.02, 0.35 ).name('Simulation Speed');
-folder.add(options, 'orbit_animation').name('Animate Orbit');
-folder.add(options, 'sun_light_only').name('Sun Light Only');
-folder.add(options, 'true_size').name('True Size');
+var lightFolder = folder.addFolder( 'Lightning options' );
+lightFolder.add(options, 'enable_shadows').name('Enable Shadows');
+lightFolder.add(ambientLight, 'visible').name('Ambient Light');
+lightFolder.open();
+var infoFolder = folder.addFolder(' Information ');
+infoFolder.add(options, 'show_labels').name('Enable Labels');
+infoFolder.open();
+var animFolder = folder.addFolder(' Animation options');
+animFolder.add(options, 'orbit_speed_multiplier', 0.02, 0.35 ).name('Simulation Speed');
+animFolder.add(options, 'distance_multiplier', 1, 2).name('Distance Multiplier');
+animFolder.add(options, 'orbit_animation').name('Animate Orbit');
+animFolder.add(options, 'animate_rotation').name('Animate Rotation');
+animFolder.add(options, 'true_size').name('True Size');
+animFolder.open();
 folder.add(options, 'earth_view').name('Earth View');
 folder.add(options, 'hide_background').name('Hide Background');
-// folder.add(ambientLight, 'intensity', 0, 0.5).name('Ambient Light Intensity');
-folder.add(ambientLight, 'visible').name('Ambient Light');
-// folder.add(renderer, 'shadowMapEnabled').name('Enable Shadows');
-folder.add(options, 'enable_shadows').name('Shadows');
-folder.add(options, 'distance_multiplier', 1, 2).name('Distance Multiplier');
-folder.add(options, 'show_labels').name('Show Labels');
-folder.add(options, 'animate_rotation').name('Animate Rotation');
+folder.open();
 
 // start at t
 // all planets lined up at t = 0
@@ -396,40 +376,46 @@ var t = 500;
 function animate() {
     requestAnimationFrame( animate );
 
-    // animate axis rotation
-    if(options.animate_rotation) {
-        sun.rotation.y += ROTATION_MULTIPLIER * AXIS_ROTATION_SUN;
-        for (var i = 0; i < planets.children.length; i++){
-            planets.children[i].rotation.y += ROTATION_MULTIPLIER * AXIS_ROTATION[i];
+    // loop through planet objects
+    for (var i = 0; i < planets.children.length; i++){
+        // animate axis rotation
+        if(options.animate_rotation) {
+            planets.children[i].rotation.y += AXIS_ROTATION_MULTIPLIER * AXIS_ROTATION[i];
         };
-    }
-
-    //animate orbits
-    if (options.orbit_animation) {
-        for (var i = 0; i < planets.children.length; i++){
+        // animate orbits
+        if (options.orbit_animation) {
             planets.children[i].position.set(
                 Math.sin(t * ORBIT_SPEED[i] * options.orbit_speed_multiplier) * (orbit_radius[i] * options.distance_multiplier),
                 0,
                 Math.cos(t * ORBIT_SPEED[i] * options.orbit_speed_multiplier) * (orbit_radius[i] * options.distance_multiplier)
             )
         };
-
-    }
-
-    if(options.true_size) {
-        for (var i = 0; i < planets.children.length; i++){
+        // true size
+        if(options.true_size) {
             if (i < 4) {
                 planets.children[i].scale.set(1 / INNER_PLANET_RADIUS_MULTIPLIER, 1 / INNER_PLANET_RADIUS_MULTIPLIER, 1 / INNER_PLANET_RADIUS_MULTIPLIER);
             } else {
                 planets.children[i].scale.set(1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER);
-
             }
-        }
-    } else {
-        for (var i = 0; i < planets.children.length; i++){
+        } else {
             planets.children[i].scale.set(1, 1, 1);
-        }
-    }
+        };
+
+        // enable/disable shadows
+        if (options.enable_shadows){
+            planets.children[i].castShadow = true;
+            planets.children[i].receiveShadow = true;
+        } else {
+            planets.children[i].castShadow = false;
+            planets.children[i].receiveShadow = false;
+        };
+    };
+
+    // sun axis rotation
+    if(options.animate_rotation) {
+        sun.rotation.y += AXIS_ROTATION_MULTIPLIER * AXIS_ROTATION_SUN;
+    };
+
     // show/hide planet labels
     if (options.show_labels) {
         mercuryLabel.visible = true;
@@ -449,22 +435,10 @@ function animate() {
         saturnLabel.visible = false;
         uranusLabel.visible = false;
         neptuneLabel.visible = false;
-    }
+    };
 
     if (options.hide_background) {bg.material.color = new THREE.Color(0x000000);}
     else {bg.material.color = new THREE.Color(0xFFFFFF);}
-
-    if (options.enable_shadows){
-        for (var i = 0; i < planets.children.length; i++) {
-            planets.children[i].castShadow = true;
-            planets.children[i].receiveShadow = true;
-        }
-    } else {
-        for (var i = 0; i < planets.children.length; i++){
-            planets.children[i].castShadow = false;
-            planets.children[i].receiveShadow = false;
-        }
-    }
     
     renderer.render( scene, camera );
     labelRenderer.render( scene, camera);
