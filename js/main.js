@@ -119,8 +119,6 @@ var mercury = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_mercury.jpg')
         }));
 mercury.position.set(endPosX + mercuryGeometry.parameters.radius + distance_between, 0, 0);
-mercury.castShadow = true;
-mercury.receiveShadow = true;
 endPosX = mercury.position.x + mercuryGeometry.parameters.radius;
 planets.add( mercury );
 
@@ -132,8 +130,6 @@ var venus  = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_venus_surface.jpg')
         }));
 venus.position.set(endPosX + venusGeometry.parameters.radius + distance_between, 0, 0);
-venus.castShadow = true;
-venus.receiveShadow = true;
 endPosX = venus.position.x + venusGeometry.parameters.radius;
 planets.add( venus );
 
@@ -145,8 +141,6 @@ var earth  = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_earth_daymap.jpg')
         }));
 earth.position.set(endPosX + earthGeometry.parameters.radius + distance_between, 0, 0);
-earth.castShadow = true;
-earth.receiveShadow = true;
 endPosX = earth.position.x + earthGeometry.parameters.radius;
 planets.add( earth );
 
@@ -158,8 +152,6 @@ var mars = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_mars.jpg')
         }));
 mars.position.set(endPosX + marsGeometry.parameters.radius + distance_between, 0, 0);
-mars.castShadow = true;
-mars.receiveShadow = true;
 endPosX = mars.position.x + marsGeometry.parameters.radius;
 planets.add( mars );
 
@@ -171,8 +163,6 @@ var jupiter  = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_jupiter.jpg')
         }));
 jupiter.position.set(endPosX + jupiterGeometry.parameters.radius + distance_between, 0, 0);
-jupiter.castShadow = true;
-jupiter.receiveShadow = true;
 endPosX = jupiter.position.x + jupiterGeometry.parameters.radius;
 planets.add( jupiter );
 
@@ -184,8 +174,6 @@ var saturn = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_saturn.jpg')
         }));
 saturn.position.set(endPosX + saturnGeometry.parameters.radius + distance_between, 0, 0);
-saturn.castShadow = true;
-saturn.receiveShadow = true;
 endPosX = saturn.position.x + saturnGeometry.parameters.radius;
 planets.add( saturn );
 
@@ -208,8 +196,6 @@ var uranus = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_uranus.jpg')
         }));
 uranus.position.set(endPosX + uranusGeometry.parameters.radius + distance_between, 0, 0);
-uranus.castShadow = true;
-uranus.receiveShadow = true;
 endPosX = uranus.position.x + uranusGeometry.parameters.radius;
 planets.add( uranus );
 
@@ -221,8 +207,6 @@ var neptune = new THREE.Mesh(
         map: new THREE.TextureLoader().load('./texture/2k_neptune.jpg')
         }));
 neptune.position.set(endPosX + neptuneGeometry.parameters.radius + distance_between, 0, 0);
-neptune.castShadow = true;
-neptune.receiveShadow = true;
 endPosX = neptune.position.x + neptuneGeometry.parameters.radius;
 planets.add( neptune );
 
@@ -238,7 +222,8 @@ var options = {
         camera.position.set(earth.position.x+150, earth.position.y+150, earth.position.z+150);
         camera.lookAt(earth.position.x, earth.position.y, earth.position.z);
     },
-    hide_background: false
+    hide_background: false,
+    enable_shadows: false
 }
 
 // gui controls
@@ -254,6 +239,7 @@ folder.add(options, 'hide_background').name('Hide Background');
 // folder.add(ambientLight, 'intensity', 0, 0.5).name('Ambient Light Intensity');
 folder.add(ambientLight, 'visible').name('Ambient Light');
 // folder.add(renderer, 'shadowMapEnabled').name('Enable Shadows');
+folder.add(options, 'enable_shadows').name('Shadows');
 
 // get planets orbit radius
 var mercuryOrbitRadius = mercury.position.x;
@@ -315,6 +301,18 @@ function animate() {
     if (options.hide_background) {bg.material.color = new THREE.Color(0x000000);}
     else {bg.material.color = new THREE.Color(0xFFFFFF);}
 
+    if (options.enable_shadows){
+        for (var i = 0; i < planets.children.length; i++) {
+            planets.children[i].castShadow = true;
+            planets.children[i].receiveShadow = true;
+        }
+    } else {
+        for (var i = 0; i < planets.children.length; i++){
+            planets.children[i].castShadow = false;
+            planets.children[i].receiveShadow = false;
+        }
+    }
+    
     renderer.render( scene, camera );
     t += Math.PI / 180 * 2;
 }
