@@ -84,11 +84,11 @@ labelRenderer.domElement.style.top = 0;
 document.body.appendChild( labelRenderer.domElement );
 
 // initialize orbit controls
-var orbit = new OrbitControls( camera, labelRenderer.domElement );
-orbit.enableZoom = true;
-orbit.maxPolarAngle = Math.PI / 2;
-orbit.minDistance = 150;
-orbit.maxDistance = 1500;
+var controls = new OrbitControls( camera, labelRenderer.domElement );
+controls.enableZoom = true;
+controls.maxPolarAngle = Math.PI / 2;
+controls.minDistance = 150;
+controls.maxDistance = 2500;
 
 // set orbit radius for each planet
 let FIXED_SPACING = 50;
@@ -105,9 +105,9 @@ var scene = new THREE.Scene();
 var bgTexture = new THREE.TextureLoader().load( './texture/8k_stars_milky_way.jpg' );
 var bgSettings = {
     geometry: new THREE.SphereGeometry(
-        RADIUS_SUN * 50, 32, 32
+        RADIUS_SUN * 50, 16, 16
     ),
-    material: new THREE.MeshLambertMaterial({
+    material: new THREE.MeshBasicMaterial({
         color: 0xFFFFFF,
         map: bgTexture,
         side: THREE.BackSide
@@ -120,9 +120,11 @@ var bg = new THREE.Mesh(
 scene.add(bg);
 
 // sunlight
-var sunlight = new THREE.PointLight( 0xffffff, 1, 0 );
+var sunlight = new THREE.PointLight();
 sunlight.castShadow = true;
-sunlight.shadowDarkness = 0.9;
+sunlight.shadow.camera.far = 2200;
+sunlight.shadow.mapSize.width = 1024;
+sunlight.shadow.mapSize.height = 1024;
 scene.add(sunlight);
 
 // ambient light
@@ -135,10 +137,8 @@ scene.add(ambientLight);
 var sunGeometry = new THREE.SphereGeometry(RADIUS_SUN, 64, 64);
 var sunSettings = {
     geometry: sunGeometry,
-    material: new THREE.MeshLambertMaterial({
-        emissive: 0xffffff,
-        emissiveMap: new THREE.TextureLoader().load('./texture/2k_sun.jpg'),
-        emisiveIntensity: 0.2
+    material: new THREE.MeshBasicMaterial({
+        map: new THREE.TextureLoader().load('./texture/2k_sun.jpg')
     })
 }
 var sun = new THREE.Mesh(sunSettings.geometry, sunSettings.material);
@@ -267,6 +267,10 @@ planets.add( neptune );
 
 scene.add( planets );
 
+for (var i = 0; i < planets.children.length; i++){
+    planets.children[i].receiveShadow = true;
+}
+
 // labels
 var mercuryDiv = document.createElement( 'div' );
 mercuryDiv.className = 'label';
@@ -340,11 +344,12 @@ var options = {
     earth_view: function (){
         camera.position.set(earth.position.x+150, earth.position.y+150, earth.position.z+150);
         camera.lookAt(earth.position.x, earth.position.y, earth.position.z);
+        // controls.target.set(earth);
     },
     hide_background: false,
     enable_shadows: false,
     distance_multiplier: 1,
-    show_labels: false,
+    show_labels: true,
     animate_rotation: false
 }
 
@@ -355,11 +360,11 @@ var lightFolder = folder.addFolder( 'Lightning options' );
 lightFolder.add(options, 'enable_shadows').name('Enable Shadows');
 lightFolder.add(ambientLight, 'visible').name('Ambient Light');
 lightFolder.open();
-var infoFolder = folder.addFolder(' Information ');
+var infoFolder = folder.addFolder('Information ');
 infoFolder.add(options, 'show_labels').name('Enable Labels');
 infoFolder.open();
-var animFolder = folder.addFolder(' Animation options');
-animFolder.add(options, 'orbit_speed_multiplier', 0.02, 0.35 ).name('Simulation Speed');
+var animFolder = folder.addFolder('Animation options');
+animFolder.add(options, 'orbit_speed_multiplier', 0.02, 0.35 ).name('Orbit Speed');
 animFolder.add(options, 'distance_multiplier', 1, 2).name('Distance Multiplier');
 animFolder.add(options, 'orbit_animation').name('Animate Orbit');
 animFolder.add(options, 'animate_rotation').name('Animate Rotation');
@@ -404,17 +409,13 @@ function animate() {
         // enable/disable shadows
         if (options.enable_shadows){
             planets.children[i].castShadow = true;
-            planets.children[i].receiveShadow = true;
         } else {
             planets.children[i].castShadow = false;
-            planets.children[i].receiveShadow = false;
         };
     };
 
     // sun axis rotation
-    if(options.animate_rotation) {
-        sun.rotation.y += AXIS_ROTATION_MULTIPLIER * AXIS_ROTATION_SUN;
-    };
+    if(options.animate_rotation) {sun.rotation.y += AXIS_ROTATION_MULTIPLIER * AXIS_ROTATION_SUN;};
 
     // show/hide planet labels
     if (options.show_labels) {
