@@ -103,8 +103,9 @@ var scene = new THREE.Scene();
 
 // set background mesh
 var bgTexture = new THREE.TextureLoader().load( './texture/8k_stars_milky_way.jpg' );
+var bgTextureWhite = new THREE.TextureLoader().load( './texture/white.png' );
 var bgSettings = {
-    geometry: new THREE.SphereGeometry(
+    geometry: new THREE.SphereBufferGeometry(
         RADIUS_SUN * 50, 16, 16
     ),
     material: new THREE.MeshBasicMaterial({
@@ -134,7 +135,7 @@ scene.add(ambientLight);
 
 // set sun and planets
 // sun
-var sunGeometry = new THREE.SphereGeometry(RADIUS_SUN, 64, 64);
+var sunGeometry = new THREE.SphereBufferGeometry(RADIUS_SUN, WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var sunSettings = {
     geometry: sunGeometry,
     material: new THREE.MeshBasicMaterial({
@@ -160,7 +161,7 @@ sun.add( sprite );
 var planets = new THREE.Group();
 
 //mercury
-var mercuryGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[0], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var mercuryGeometry = new THREE.SphereBufferGeometry(RADIUS_PLANETS[0], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var mercury = new THREE.Mesh(
     mercuryGeometry,
     new THREE.MeshLambertMaterial({
@@ -172,7 +173,7 @@ endPosX = mercury.position.x + mercuryGeometry.parameters.radius;
 planets.add( mercury );
 
 //venus
-var venusGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[1], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var venusGeometry = new THREE.SphereBufferGeometry(RADIUS_PLANETS[1], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var venus  = new THREE.Mesh(
     venusGeometry,
     new THREE.MeshLambertMaterial({
@@ -184,7 +185,7 @@ endPosX = venus.position.x + venusGeometry.parameters.radius;
 planets.add( venus );
 
 //earth
-var earthGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[2], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var earthGeometry = new THREE.SphereBufferGeometry(RADIUS_PLANETS[2], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var earth  = new THREE.Mesh(
     earthGeometry,
     new THREE.MeshLambertMaterial({
@@ -196,7 +197,7 @@ endPosX = earth.position.x + earthGeometry.parameters.radius;
 planets.add( earth );
 
 //mars
-var marsGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[3], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var marsGeometry = new THREE.SphereBufferGeometry(RADIUS_PLANETS[3], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var mars = new THREE.Mesh(
     marsGeometry,
     new THREE.MeshLambertMaterial({
@@ -208,7 +209,7 @@ endPosX = mars.position.x + marsGeometry.parameters.radius;
 planets.add( mars );
 
 //jupiter
-var jupiterGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[4], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var jupiterGeometry = new THREE.SphereBufferGeometry(RADIUS_PLANETS[4], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var jupiter  = new THREE.Mesh(
     jupiterGeometry,
     new THREE.MeshLambertMaterial({
@@ -220,7 +221,7 @@ endPosX = jupiter.position.x + jupiterGeometry.parameters.radius;
 planets.add( jupiter );
 
 //saturn
-var saturnGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[5], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var saturnGeometry = new THREE.SphereBufferGeometry(RADIUS_PLANETS[5], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var saturn = new THREE.Mesh(
     saturnGeometry,
     new THREE.MeshLambertMaterial({
@@ -242,7 +243,7 @@ saturnR.receiveShadow = true;
 saturn.add( saturnR );
 
 //uranus
-var uranusGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[6], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var uranusGeometry = new THREE.SphereBufferGeometry(RADIUS_PLANETS[6], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var uranus = new THREE.Mesh(
     uranusGeometry,
     new THREE.MeshLambertMaterial({
@@ -254,7 +255,7 @@ endPosX = uranus.position.x + uranusGeometry.parameters.radius;
 planets.add( uranus );
 
 //neptune
-var neptuneGeometry = new THREE.SphereGeometry(RADIUS_PLANETS[7], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
+var neptuneGeometry = new THREE.SphereBufferGeometry(RADIUS_PLANETS[7], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
 var neptune = new THREE.Mesh(
     neptuneGeometry,
     new THREE.MeshLambertMaterial({
@@ -347,6 +348,7 @@ var options = {
         // controls.target.set(earth);
     },
     hide_background: false,
+    white_background: false,
     enable_shadows: false,
     distance_multiplier: 1,
     show_labels: true,
@@ -372,6 +374,7 @@ animFolder.add(options, 'true_size').name('True Size');
 animFolder.open();
 folder.add(options, 'earth_view').name('Earth View');
 folder.add(options, 'hide_background').name('Hide Background');
+folder.add(options, 'white_background').name('White Background');
 folder.open();
 
 // start at t
@@ -440,6 +443,9 @@ function animate() {
 
     if (options.hide_background) {bg.material.color = new THREE.Color(0x000000);}
     else {bg.material.color = new THREE.Color(0xFFFFFF);}
+
+    if (options.white_background) {bg.material.map = bgTextureWhite;}
+    else {bg.material.map = bgTexture};
     
     renderer.render( scene, camera );
     labelRenderer.render( scene, camera);
