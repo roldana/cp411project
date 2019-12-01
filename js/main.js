@@ -95,7 +95,7 @@ controls.minDistance = 150;
 controls.maxDistance = 2500;
 
 // set orbit radius for each planet
-let FIXED_SPACING = 50;
+let FIXED_SPACING = 40;
 var orbit_radius = [];
 orbit_radius[0] = (RADIUS_SUN + RADIUS_PLANETS[0] + FIXED_SPACING);
 for (var i = 1; i < RADIUS_PLANETS.length; i++) {
@@ -369,7 +369,8 @@ var options = {
     distance_multiplier: INITIAL_DISTANCE_MULTIPLIER,
     show_labels: true,
     animate_rotation: false,
-    camera_target: -1
+    camera_target: -1,
+    size_comparison: false
 }
 
 var camera_pos = {
@@ -403,10 +404,10 @@ infoFolder.add(options, 'show_labels').name('Enable Labels');
 infoFolder.open();
 var animFolder = folder.addFolder('Animation Options');
 animFolder.add(options, 'orbit_speed_multiplier', 0.02, 0.35 ).name('Orbit Speed');
-animFolder.add(options, 'distance_multiplier', 1, 2).name('Distance Multiplier');
+animFolder.add(options, 'distance_multiplier', 1, 2).listen().name('Distance Multiplier');
 animFolder.add(options, 'orbit_animation').name('Animate Orbit');
 animFolder.add(options, 'animate_rotation').name('Animate Rotation');
-animFolder.add(options, 'true_size').name('True Size');
+animFolder.add(options, 'true_size').listen().name('True Size');
 animFolder.open();
 var cameraFolder = folder.addFolder('Camera Focus');
 cameraFolder.add(options, 'standard_view').name('RESET');
@@ -419,6 +420,7 @@ cameraFolder.add(camera_pos, 'saturn').name('Saturn').listen().onChange(function
 cameraFolder.add(camera_pos, 'uranus').name('Uranus').listen().onChange(function(){options.camera_target = 6;setChecked('uranus')});
 cameraFolder.add(camera_pos, 'neptune').name('Neptune').listen().onChange(function(){options.camera_target = 7;setChecked('neptune')});
 cameraFolder.open();
+folder.add(options, 'size_comparison').name('Size Comparison').listen();
 folder.add(options, 'hide_background').name('Hide Background');
 folder.add(options, 'white_background').name('White Background');
 folder.open();
@@ -430,6 +432,11 @@ var t = 500;
 function animate() {
     requestAnimationFrame( animate );
 
+    if(options.size_comparison){
+        options.true_size = true;
+        options.distance_multiplier = 0.75;
+    }
+
     // loop through planet objects
     for (var i = 0; i < planets.children.length; i++){
         // animate axis rotation
@@ -439,9 +446,9 @@ function animate() {
         // animate orbits
         if (options.orbit_animation) {
             planets.children[i].position.set(
-                Math.sin(t * ORBIT_SPEED[i] * options.orbit_speed_multiplier) * (orbit_radius[i] * options.distance_multiplier),
+                (Math.sin(t * ORBIT_SPEED[i] * options.orbit_speed_multiplier) * (orbit_radius[i] * options.distance_multiplier)),
                 0,
-                Math.cos(t * ORBIT_SPEED[i] * options.orbit_speed_multiplier) * (orbit_radius[i] * options.distance_multiplier)
+                (Math.cos(t * ORBIT_SPEED[i] * options.orbit_speed_multiplier) * (orbit_radius[i] * options.distance_multiplier))
             )
         };
         // true size
@@ -451,8 +458,13 @@ function animate() {
             } else {
                 planets.children[i].scale.set(1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER);
             }
+            controls.minDistance = 30;
         } else {
+            if (options.distance_multiplier < 1) {
+                options.distance_multiplier = 1;
+            }
             planets.children[i].scale.set(1, 1, 1);
+            controls.minDistance = 150;
         };
         // enable/disable shadows
         if (options.enable_shadows){
@@ -502,7 +514,17 @@ function animate() {
     renderer.render( scene, camera );
     labelRenderer.render( scene, camera);
 
-    if (options.orbit_animation){t += Math.PI / 180 * 2;}
+    if (options.orbit_animation){
+        if (t < 0) {
+            t = 500;
+        } else {
+            t += Math.PI / 180 * 2;
+        }
+    }
+    // t = -1 if size_comparison
+    if (options.size_comparison){
+        t = -1;
+    }
 }
 
 animate();
