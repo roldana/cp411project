@@ -347,8 +347,9 @@ var options = {
     },
     hide_background: false,
     distance_multiplier: 1,
-    show_labels: false
+    show_labels: false,
     // distance_between: 0
+    show_facts: false
 }
 
 // gui controls
@@ -363,6 +364,7 @@ folder.add(options, 'earth_view').name('Earth View');
 folder.add(options, 'hide_background').name('Hide Background');
 folder.add(options, 'distance_multiplier', 1, 2).name('Distance Multiplier');
 folder.add(options, 'show_labels').name('Show Labels');
+folder.add(options, 'show_facts').name('Facts');
 
 // start at t
 // all planets lined up at t = 0
@@ -425,6 +427,12 @@ function animate() {
     labelRenderer.render( scene, camera);
 
     if (options.orbit_animation){t += Math.PI / 180 * 2;}
+
+    if (options.show_facts){
+        document.querySelector('#information').style.visibility = "visible";
+    } else {
+        document.querySelector('#information').style.visibility = "hidden";
+    }
 }
 
 animate();

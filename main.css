@@ -62,10 +62,8 @@ a, button, input, select {
 }
 
 #information {
-	right: 0%;
 	bottom: 0%;
-	position: absolute;
-	padding: 10px;
-	text-align: center;
-	width: 100%
+    position: absolute;
+    margin-left: 20px;
+    margin-bottom: 20px;
 }
