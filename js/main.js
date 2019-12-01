@@ -356,17 +356,39 @@ var options = {
     orbit_speed_multiplier: INITIAL_SPEED_MULTIPLIER,
     orbit_animation: true,
     true_size: false,
-    earth_view: function (){
-        camera.position.set(earth.position.x+150, earth.position.y+150, earth.position.z+150);
-        camera.lookAt(earth.position.x, earth.position.y, earth.position.z);
-        // controls.target.set(earth);
+    standard_view: function (){
+        camera.position.set(-300, 400, -300);
+        camera.lookAt(0, 0, 0);
+        controls.target.set(0, 0, 0);
+        this.camera_target = -1;
+        setChecked('sun');
     },
     hide_background: false,
     white_background: false,
     enable_shadows: false,
     distance_multiplier: INITIAL_DISTANCE_MULTIPLIER,
     show_labels: true,
-    animate_rotation: false
+    animate_rotation: false,
+    camera_target: -1
+}
+
+var camera_pos = {
+    sun: true,
+    mercury: false,
+    venus: false,
+    earth: false,
+    mars: false,
+    jupiter: false,
+    saturn: false,
+    uranus: false,
+    neptune: false
+}
+
+function setChecked(pos){
+    for (let param in camera_pos){
+        camera_pos[param] = false;
+    }
+    camera_pos[pos] = true;
 }
 
 // gui controls
@@ -379,14 +401,24 @@ lightFolder.open();
 var infoFolder = folder.addFolder('Information ');
 infoFolder.add(options, 'show_labels').name('Enable Labels');
 infoFolder.open();
-var animFolder = folder.addFolder('Animation options');
+var animFolder = folder.addFolder('Animation Options');
 animFolder.add(options, 'orbit_speed_multiplier', 0.02, 0.35 ).name('Orbit Speed');
 animFolder.add(options, 'distance_multiplier', 1, 2).name('Distance Multiplier');
 animFolder.add(options, 'orbit_animation').name('Animate Orbit');
 animFolder.add(options, 'animate_rotation').name('Animate Rotation');
 animFolder.add(options, 'true_size').name('True Size');
 animFolder.open();
-folder.add(options, 'earth_view').name('Earth View');
+var cameraFolder = folder.addFolder('Camera Focus');
+cameraFolder.add(options, 'standard_view').name('RESET');
+cameraFolder.add(camera_pos, 'mercury').name('Mercury').listen().onChange(function(){options.camera_target = 0;setChecked('mercury')});
+cameraFolder.add(camera_pos, 'venus').name('Venus').listen().onChange(function(){options.camera_target = 1;setChecked('venus')});
+cameraFolder.add(camera_pos, 'earth').name('Earth').listen().onChange(function(){options.camera_target = 2;setChecked('earth')});
+cameraFolder.add(camera_pos, 'mars').name('Mars').listen().onChange(function(){options.camera_target = 3;setChecked('mars')});
+cameraFolder.add(camera_pos, 'jupiter').name('Jupiter').listen().onChange(function(){options.camera_target = 4;setChecked('jupiter')});
+cameraFolder.add(camera_pos, 'saturn').name('Saturn').listen().onChange(function(){options.camera_target = 5;setChecked('saturn')});
+cameraFolder.add(camera_pos, 'uranus').name('Uranus').listen().onChange(function(){options.camera_target = 6;setChecked('uranus')});
+cameraFolder.add(camera_pos, 'neptune').name('Neptune').listen().onChange(function(){options.camera_target = 7;setChecked('neptune')});
+cameraFolder.open();
 folder.add(options, 'hide_background').name('Hide Background');
 folder.add(options, 'white_background').name('White Background');
 folder.open();
@@ -422,7 +454,6 @@ function animate() {
         } else {
             planets.children[i].scale.set(1, 1, 1);
         };
-
         // enable/disable shadows
         if (options.enable_shadows){
             planets.children[i].castShadow = true;
@@ -454,6 +485,13 @@ function animate() {
         uranusLabel.visible = false;
         neptuneLabel.visible = false;
     };
+
+    // update control target and camera lookat if planet selected
+    if (options.camera_target >= 0) {
+        controls.target.set(planets.children[options.camera_target].position.x, 0, planets.children[options.camera_target].position.z);
+        controls.update();
+        camera.lookAt(planets.children[options.camera_target].position.x, 0, planets.children[options.camera_target].position.z);
+    }
 
     if (options.hide_background) {bg.material.color = new THREE.Color(0x000000);}
     else {bg.material.color = new THREE.Color(0xFFFFFF);}
