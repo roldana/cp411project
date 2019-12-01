@@ -403,6 +403,7 @@ lightFolder.add(ambientLight, 'visible').name('Ambient Light');
 lightFolder.open();
 var infoFolder = folder.addFolder('Information ');
 infoFolder.add(options, 'show_labels').name('Enable Labels');
+infoFolder.add(options, 'size_comparison').name('Size Comparison').listen();
 infoFolder.add(options, 'show_facts').name('Facts');
 infoFolder.open();
 var animFolder = folder.addFolder('Animation Options');
@@ -423,8 +424,7 @@ cameraFolder.add(camera_pos, 'saturn').name('Saturn').listen().onChange(function
 cameraFolder.add(camera_pos, 'uranus').name('Uranus').listen().onChange(function(){options.camera_target = 6;setChecked('uranus')});
 cameraFolder.add(camera_pos, 'neptune').name('Neptune').listen().onChange(function(){options.camera_target = 7;setChecked('neptune')});
 cameraFolder.open();
-folder.add(options, 'size_comparison').name('Size Comparison').listen();
-folder.add(options, 'hide_background').name('Hide Background');
+// folder.add(options, 'hide_background').name('Hide Background');
 folder.add(options, 'white_background').name('White Background');
 folder.open();
 
@@ -461,7 +461,7 @@ function animate() {
             } else {
                 planets.children[i].scale.set(1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER, 1 / OUTER_PLANET_RADIUS_MULTIPLIER);
             }
-            controls.minDistance = 30;
+            controls.minDistance = 25;
         } else {
             if (options.distance_multiplier < 1) {
                 options.distance_multiplier = 1;
@@ -530,9 +530,9 @@ function animate() {
     }
   
     if (options.show_facts){
-        document.querySelector('#information').style.visibility = "visible";
+        document.querySelector('#information').style.display = "block";
     } else {
-        document.querySelector('#information').style.visibility = "hidden";
+        document.querySelector('#information').style.display = "none";
     }
 }
 
