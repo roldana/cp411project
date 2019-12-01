@@ -15,6 +15,8 @@ let RADIUS_MULTIPLIER_EARTH = 0.00914924;
 let WIDTH_SEGMENTS = 64;
 let HEIGHT_SEGMENTS = 64;
 
+let INITIAL_DISTANCE_MULTIPLIER = 1;
+
 let INNER_PLANET_RADIUS_MULTIPLIER = 15;
 let OUTER_PLANET_RADIUS_MULTIPLIER = 4.5;
 
@@ -43,6 +45,8 @@ let AXIS_ROTATION = [
     1/0.70,
     1/0.66
 ]
+
+let INITIAL_SPEED_MULTIPLIER = 0.05;
 
 let ORBIT_SPEED = [
     1/0.2,
@@ -129,7 +133,7 @@ sunlight.shadow.mapSize.height = 1024;
 scene.add(sunlight);
 
 // ambient light
-var ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+var ambientLight = new THREE.AmbientLight(0xffffff, 0.35);
 ambientLight.visible = false;
 scene.add(ambientLight);
 
@@ -195,6 +199,16 @@ earth.position.set(endPosX + earthGeometry.parameters.radius + FIXED_SPACING, 0,
 earth.rotateX(THREE.Math.degToRad(23.44));
 endPosX = earth.position.x + earthGeometry.parameters.radius;
 planets.add( earth );
+
+// moon
+var moon = new THREE.Mesh(
+    new THREE.SphereBufferGeometry(RADIUS_PLANETS[2] * 0.27, WIDTH_SEGMENTS, HEIGHT_SEGMENTS),
+    new THREE.MeshLambertMaterial({
+        map: new THREE.TextureLoader().load('./texture/2k_moon.jpg')
+    }));
+moon.position.set(25, 0, 25);
+moon.receiveShadow = true;
+earth.add(moon);
 
 //mars
 var marsGeometry = new THREE.SphereBufferGeometry(RADIUS_PLANETS[3], WIDTH_SEGMENTS, HEIGHT_SEGMENTS);
@@ -339,7 +353,7 @@ neptune.add(neptuneLabel);
 
 // animation options
 var options = {
-    orbit_speed_multiplier: 0.05,
+    orbit_speed_multiplier: INITIAL_SPEED_MULTIPLIER,
     orbit_animation: true,
     true_size: false,
     earth_view: function (){
@@ -350,7 +364,7 @@ var options = {
     hide_background: false,
     white_background: false,
     enable_shadows: false,
-    distance_multiplier: 1,
+    distance_multiplier: INITIAL_DISTANCE_MULTIPLIER,
     show_labels: true,
     animate_rotation: false
 }
