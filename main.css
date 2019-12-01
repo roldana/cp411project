@@ -60,3 +60,10 @@ a, button, input, select {
 	background: rgba( 0, 0, 0, .6 );
 	z-index: 3 !important;
 }
+
+#information {
+	bottom: 0%;
+    position: absolute;
+    margin-left: 20px;
+    margin-bottom: 20px;
+}

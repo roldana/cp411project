@@ -364,6 +364,8 @@ var options = {
         setChecked('sun');
     },
     hide_background: false,
+    distance_multiplier: 1,
+    show_facts: false,
     white_background: false,
     enable_shadows: false,
     distance_multiplier: INITIAL_DISTANCE_MULTIPLIER,
@@ -401,6 +403,7 @@ lightFolder.add(ambientLight, 'visible').name('Ambient Light');
 lightFolder.open();
 var infoFolder = folder.addFolder('Information ');
 infoFolder.add(options, 'show_labels').name('Enable Labels');
+infoFolder.add(options, 'show_facts').name('Facts');
 infoFolder.open();
 var animFolder = folder.addFolder('Animation Options');
 animFolder.add(options, 'orbit_speed_multiplier', 0.02, 0.35 ).name('Orbit Speed');
@@ -524,6 +527,12 @@ function animate() {
     // t = -1 if size_comparison
     if (options.size_comparison){
         t = -1;
+    }
+  
+    if (options.show_facts){
+        document.querySelector('#information').style.visibility = "visible";
+    } else {
+        document.querySelector('#information').style.visibility = "hidden";
     }
 }
 
