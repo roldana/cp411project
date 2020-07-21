@@ -2,6 +2,10 @@
 ## To Run:
 -Navigate to the root folder
 ```
-$ php -S localhost:8080
+$ php -S localhost:80
 ```
--Open http://localhost:8080/solar_system.html in browser.
+-Open http://localhost/solar_system.html in browser.
+
+## Controls:
+
+- Mouse/touchpad scrolling and cursor movement.

@@ -208,6 +208,7 @@ var moon = new THREE.Mesh(
     }));
 moon.position.set(25, 0, 25);
 moon.receiveShadow = true;
+moon.castShadow = true;
 earth.add(moon);
 
 //mars
@@ -370,7 +371,7 @@ var options = {
     enable_shadows: false,
     distance_multiplier: INITIAL_DISTANCE_MULTIPLIER,
     show_labels: true,
-    animate_rotation: false,
+    animate_rotation: true,
     camera_target: -1,
     size_comparison: false
 }
@@ -404,7 +405,7 @@ lightFolder.open();
 var infoFolder = folder.addFolder('Information ');
 infoFolder.add(options, 'show_labels').name('Enable Labels');
 infoFolder.add(options, 'size_comparison').name('Size Comparison').listen();
-infoFolder.add(options, 'show_facts').name('Facts');
+infoFolder.add(options, 'show_facts').name('Info');
 infoFolder.open();
 var animFolder = folder.addFolder('Animation Options');
 animFolder.add(options, 'orbit_speed_multiplier', 0.02, 0.35 ).name('Orbit Speed');
@@ -423,8 +424,6 @@ cameraFolder.add(camera_pos, 'jupiter').name('Jupiter').listen().onChange(functi
 cameraFolder.add(camera_pos, 'saturn').name('Saturn').listen().onChange(function(){options.camera_target = 5;setChecked('saturn')});
 cameraFolder.add(camera_pos, 'uranus').name('Uranus').listen().onChange(function(){options.camera_target = 6;setChecked('uranus')});
 cameraFolder.add(camera_pos, 'neptune').name('Neptune').listen().onChange(function(){options.camera_target = 7;setChecked('neptune')});
-cameraFolder.open();
-// folder.add(options, 'hide_background').name('Hide Background');
 folder.add(options, 'white_background').name('White Background');
 folder.open();
 
@@ -513,9 +512,6 @@ function animate() {
 
     if (options.white_background) {bg.material.map = bgTextureWhite;}
     else {bg.material.map = bgTexture};
-    
-    renderer.render( scene, camera );
-    labelRenderer.render( scene, camera);
 
     if (options.orbit_animation){
         if (t < 0) {
@@ -534,6 +530,10 @@ function animate() {
     } else {
         document.querySelector('#information').style.display = "none";
     }
+    // webGL renderer
+    renderer.render( scene, camera );
+    // label renderer
+    labelRenderer.render( scene, camera);
 }
 
 animate();
